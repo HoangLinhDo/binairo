@@ -1,0 +1,721 @@
+#!/usr/bin/env python3
+"""
+Binairo Game - Interactive Pygame Interface
+
+Run this script to play Binairo interactively.
+You can also watch the AI solve puzzles step by step.
+
+Usage:
+    python play_game.py                    # Start with 6x6 puzzle
+    python play_game.py --size 10          # Start with 10x10 puzzle
+    python play_game.py --difficulty hard  # Start with hard difficulty
+"""
+
+import sys
+import os
+import argparse
+import time
+
+# Add parent directory to path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+try:
+    import pygame
+    PYGAME_AVAILABLE = True
+except ImportError:
+    PYGAME_AVAILABLE = False
+    print("Error: pygame not installed. Install with: pip install pygame")
+
+from nmai_binairo.board import BinairoBoard
+from nmai_binairo.solver_dfs import DFSSolver
+from nmai_binairo.solver_heuristic import HeuristicSolver
+from nmai_binairo.testcases.puzzle_generator import PuzzleGenerator
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GRAY = (128, 128, 128)
+LIGHT_GRAY = (200, 200, 200)
+RED = (255, 0, 0)
+GREEN = (0, 200, 0)
+BLUE = (0, 128, 255)
+YELLOW = (255, 255, 0)
+BOARD_COLOR = (128, 98, 82)
+BACKGROUND_COLOR = (45, 45, 60)
+GRID_COLOR = (0, 180, 0)
+BUTTON_COLOR = (0, 128, 255)
+
+
+class BinairoGame:
+    """Interactive Binairo game with Pygame."""
+
+    CELL_SIZE = 50
+    GRID_THICKNESS = 3
+    BORDER_THICKNESS = 8
+    BUTTON_HEIGHT = 45
+    BUTTON_WIDTH = 150
+    BUTTON_MARGIN = 8
+    PADDING = 20
+
+    def __init__(self, size: int = 6, difficulty: str = "medium"):
+        if not PYGAME_AVAILABLE:
+            raise ImportError("pygame is required")
+
+        self.generator = PuzzleGenerator()
+        self.board_size = size
+        self.difficulty = difficulty
+        self.board = None
+        self.original_board = None
+        self.solution = None
+        self.selected_cell = None
+        self.solving = False
+        self.delay_ms = 100
+
+        # Difficulty mapping
+        self.difficulty_map = {
+            "easy": 0.4,
+            "medium": 0.55,
+            "hard": 0.65,
+            "very_hard": 0.75,
+        }
+
+        self._calculate_dimensions()
+        self._init_pygame()
+        self._create_buttons()
+        self._new_puzzle()
+
+    def _calculate_dimensions(self):
+        """Calculate screen dimensions."""
+        self.board_pixel_size = self.board_size * (self.CELL_SIZE + self.GRID_THICKNESS) + self.GRID_THICKNESS
+        self.screen_width = max(self.board_pixel_size + 2 * self.PADDING,
+                                6 * (self.BUTTON_WIDTH + self.BUTTON_MARGIN))
+        self.screen_height = (self.board_pixel_size + 3 * self.BUTTON_HEIGHT +
+                              5 * self.BUTTON_MARGIN + 3 * self.PADDING + 30)
+        self.board_x = (self.screen_width - self.board_pixel_size) // 2
+        self.board_y = self.PADDING
+
+    def _init_pygame(self):
+        """Initialize Pygame."""
+        pygame.init()
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        pygame.display.set_caption("Binairo Game - NMAI Project")
+        self.font = pygame.font.Font(None, 28)
+        self.small_font = pygame.font.Font(None, 22)
+        self.title_font = pygame.font.Font(None, 36)
+
+    def _create_buttons(self):
+        """Create UI buttons."""
+        self.buttons = []
+        button_y = self.board_y + self.board_pixel_size + self.PADDING
+
+        # Row 1: Size buttons
+        sizes = [6, 8, 10, 14, 20]
+        start_x = (self.screen_width - (len(sizes) * (self.BUTTON_WIDTH + self.BUTTON_MARGIN))) // 2
+
+        for i, size in enumerate(sizes):
+            rect = pygame.Rect(
+                start_x + i * (self.BUTTON_WIDTH + self.BUTTON_MARGIN),
+                button_y, self.BUTTON_WIDTH, self.BUTTON_HEIGHT
+            )
+            color = GREEN if size == self.board_size else BUTTON_COLOR
+            self.buttons.append((rect, f"{size}x{size}", ('size', size), color))
+
+        # Row 2: Solver buttons
+        button_y += self.BUTTON_HEIGHT + self.BUTTON_MARGIN
+        solver_buttons = [
+            ("Solve DFS", ('solve', 'dfs'), BLUE),
+            ("Solve HS", ('solve', 'heuristic'), BLUE),
+            ("Step DFS", ('step', 'dfs'), (100, 100, 200)),
+            ("Step HS", ('step', 'heuristic'), (100, 100, 200)),
+            ("Compare", ('compare', None), (200, 100, 100)),
+        ]
+
+        for i, (label, action, color) in enumerate(solver_buttons):
+            rect = pygame.Rect(
+                start_x + i * (self.BUTTON_WIDTH + self.BUTTON_MARGIN),
+                button_y, self.BUTTON_WIDTH, self.BUTTON_HEIGHT
+            )
+            self.buttons.append((rect, label, action, color))
+
+        # Row 3: Control buttons
+        button_y += self.BUTTON_HEIGHT + self.BUTTON_MARGIN
+        control_buttons = [
+            ("New Puzzle", ('new', None), GREEN),
+            ("Reset", ('reset', None), YELLOW),
+            ("Validate", ('validate', None), (200, 150, 0)),
+        ]
+
+        # Calculate start_x for Row 3 (3 buttons instead of 5)
+        start_x_row3 = (self.screen_width - (len(control_buttons) * (self.BUTTON_WIDTH + self.BUTTON_MARGIN))) // 2
+
+        for i, (label, action, color) in enumerate(control_buttons):
+            rect = pygame.Rect(
+                start_x_row3 + i * (self.BUTTON_WIDTH + self.BUTTON_MARGIN),
+                button_y, self.BUTTON_WIDTH, self.BUTTON_HEIGHT
+            )
+            self.buttons.append((rect, label, action, color))
+
+    def _new_puzzle(self):
+        """Generate a new puzzle."""
+        diff_value = self.difficulty_map.get(self.difficulty, 0.55)
+        puzzle, solution = self.generator.generate_puzzle(self.board_size, diff_value)
+        self.board = [row[:] for row in puzzle]
+        self.original_board = [row[:] for row in puzzle]
+        self.solution = solution
+        self.selected_cell = None
+
+    def _reset_puzzle(self):
+        """Reset puzzle to original state."""
+        if self.original_board:
+            self.board = [row[:] for row in self.original_board]
+            self.selected_cell = None
+
+    def _validate(self) -> tuple:
+        """Validate current board state. Returns (is_valid, message)."""
+        n = self.board_size
+
+        # Check for empty cells
+        has_empty = any(cell is None for row in self.board for cell in row)
+
+        # Check no triple rule
+        for i in range(n):
+            for j in range(n - 2):
+                # Row triples
+                if (self.board[i][j] is not None and
+                    self.board[i][j] == self.board[i][j+1] == self.board[i][j+2]):
+                    return False, f"Triple at row {i+1}"
+                # Column triples
+                if (self.board[j][i] is not None and
+                    self.board[j][i] == self.board[j+1][i] == self.board[j+2][i]):
+                    return False, f"Triple at col {i+1}"
+
+        if has_empty:
+            return True, "Valid so far (incomplete)"
+
+        # Check counts
+        for i in range(n):
+            if sum(self.board[i]) != n // 2:
+                return False, f"Row {i+1} count wrong"
+            col_sum = sum(self.board[r][i] for r in range(n))
+            if col_sum != n // 2:
+                return False, f"Col {i+1} count wrong"
+
+        # Check uniqueness
+        rows = [tuple(row) for row in self.board]
+        if len(rows) != len(set(rows)):
+            return False, "Duplicate rows"
+
+        cols = [tuple(self.board[r][c] for r in range(n)) for c in range(n)]
+        if len(cols) != len(set(cols)):
+            return False, "Duplicate columns"
+
+        return True, "Valid solution!"
+
+    def _draw_board(self):
+        """Draw the game board."""
+        # Draw board background
+        pygame.draw.rect(self.screen, BOARD_COLOR,
+                        (self.board_x, self.board_y,
+                         self.board_pixel_size, self.board_pixel_size))
+
+        # Draw border
+        pygame.draw.rect(self.screen, RED,
+                        (self.board_x - self.BORDER_THICKNESS,
+                         self.board_y - self.BORDER_THICKNESS,
+                         self.board_pixel_size + 2 * self.BORDER_THICKNESS,
+                         self.board_pixel_size + 2 * self.BORDER_THICKNESS),
+                        self.BORDER_THICKNESS)
+
+        # Draw grid
+        for i in range(self.board_size + 1):
+            y = self.board_y + i * (self.CELL_SIZE + self.GRID_THICKNESS)
+            pygame.draw.line(self.screen, GRID_COLOR,
+                           (self.board_x, y + self.GRID_THICKNESS // 2),
+                           (self.board_x + self.board_pixel_size, y + self.GRID_THICKNESS // 2),
+                           self.GRID_THICKNESS)
+
+            x = self.board_x + i * (self.CELL_SIZE + self.GRID_THICKNESS)
+            pygame.draw.line(self.screen, GRID_COLOR,
+                           (x + self.GRID_THICKNESS // 2, self.board_y),
+                           (x + self.GRID_THICKNESS // 2, self.board_y + self.board_pixel_size),
+                           self.GRID_THICKNESS)
+
+        # Draw cells
+        for row in range(self.board_size):
+            for col in range(self.board_size):
+                val = self.board[row][col]
+                if val is not None:
+                    self._draw_cell(row, col, val)
+
+                # Highlight selected cell
+                if self.selected_cell == (row, col):
+                    self._draw_highlight(row, col)
+
+    def _draw_cell(self, row: int, col: int, value: int):
+        """Draw a cell value."""
+        cell_x = self.board_x + col * (self.CELL_SIZE + self.GRID_THICKNESS) + self.GRID_THICKNESS
+        cell_y = self.board_y + row * (self.CELL_SIZE + self.GRID_THICKNESS) + self.GRID_THICKNESS
+
+        center_x = cell_x + self.CELL_SIZE // 2
+        center_y = cell_y + self.CELL_SIZE // 2
+        radius = self.CELL_SIZE // 2 - 4
+
+        color = WHITE if value == 1 else BLACK
+        pygame.draw.circle(self.screen, color, (center_x, center_y), radius)
+
+        # Draw marker for original cells
+        if self.original_board and self.original_board[row][col] is not None:
+            pygame.draw.rect(self.screen, RED, (center_x - 2, center_y - 2, 4, 4))
+
+    def _draw_highlight(self, row: int, col: int):
+        """Draw highlight on selected cell."""
+        cell_x = self.board_x + col * (self.CELL_SIZE + self.GRID_THICKNESS) + self.GRID_THICKNESS
+        cell_y = self.board_y + row * (self.CELL_SIZE + self.GRID_THICKNESS) + self.GRID_THICKNESS
+
+        highlight = pygame.Surface((self.CELL_SIZE, self.CELL_SIZE), pygame.SRCALPHA)
+        highlight.fill((255, 255, 0, 100))
+        self.screen.blit(highlight, (cell_x, cell_y))
+
+    def _draw_buttons(self):
+        """Draw all buttons."""
+        for rect, label, action, color in self.buttons:
+            # Highlight size button if it's the current size
+            if action[0] == 'size':
+                color = GREEN if action[1] == self.board_size else BUTTON_COLOR
+
+            pygame.draw.rect(self.screen, color, rect)
+            pygame.draw.rect(self.screen, WHITE, rect, 2)
+
+            text = self.font.render(label, True, WHITE)
+            text_rect = text.get_rect(center=rect.center)
+            self.screen.blit(text, text_rect)
+
+    def _draw_status(self, message: str = ""):
+        """Draw status bar."""
+        status_y = self.screen_height - self.PADDING - 10
+
+        # Draw status background
+        pygame.draw.rect(self.screen, (30, 30, 40),
+                        (0, status_y - 10, self.screen_width, 30))
+
+        # Draw instructions
+        instructions = f"Left click: White (1) | Right click: Black (0)"
+        inst_text = self.small_font.render(instructions, True, LIGHT_GRAY)
+        self.screen.blit(inst_text, (self.PADDING, status_y))
+
+        # Draw message
+        if message:
+            msg_text = self.font.render(message, True, WHITE)
+            self.screen.blit(msg_text, (self.screen_width - msg_text.get_width() - self.PADDING, status_y))
+
+    def _handle_click(self, pos: tuple, button: int):
+        """Handle mouse click."""
+        x, y = pos
+
+        # Check button clicks
+        for rect, _, action, _ in self.buttons:
+            if rect.collidepoint(pos):
+                return self._handle_button_action(action)
+
+        # Check board clicks
+        if (self.board_x <= x <= self.board_x + self.board_pixel_size and
+            self.board_y <= y <= self.board_y + self.board_pixel_size):
+
+            rel_x = x - self.board_x - self.GRID_THICKNESS // 2
+            rel_y = y - self.board_y - self.GRID_THICKNESS // 2
+
+            col = rel_x // (self.CELL_SIZE + self.GRID_THICKNESS)
+            row = rel_y // (self.CELL_SIZE + self.GRID_THICKNESS)
+
+            if 0 <= row < self.board_size and 0 <= col < self.board_size:
+                # Only modify cells that were originally empty
+                if self.original_board[row][col] is None:
+                    if button == 1:  # Left click = White (1)
+                        self.board[row][col] = 1 if self.board[row][col] != 1 else None
+                    elif button == 3:  # Right click = Black (0)
+                        self.board[row][col] = 0 if self.board[row][col] != 0 else None
+                self.selected_cell = (row, col)
+
+        return ""
+
+    def _handle_button_action(self, action: tuple) -> str:
+        """Handle button action and return status message."""
+        action_type, action_value = action
+
+        if action_type == 'size':
+            self.board_size = action_value
+            self._calculate_dimensions()
+            self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+            self._create_buttons()
+            self._new_puzzle()
+            return f"New {action_value}x{action_value} puzzle"
+
+        elif action_type == 'new':
+            self._new_puzzle()
+            return "New puzzle generated"
+
+        elif action_type == 'reset':
+            self._reset_puzzle()
+            return "Puzzle reset"
+
+        elif action_type == 'validate':
+            is_valid, msg = self._validate()
+            return msg
+
+        elif action_type == 'solve':
+            self._reset_puzzle()
+            solver = DFSSolver() if action_value == 'dfs' else HeuristicSolver()
+            solution, stats = solver.solve([row[:] for row in self.board])
+            if solution:
+                self.board = solution
+                # For heuristic, show total steps (nodes + propagations)
+                if action_value == 'heuristic':
+                    total_steps = stats.get('nodes_explored', 0) + stats.get('propagations', 0)
+                    return f"Solved! Steps: {total_steps}"
+                else:
+                    return f"Solved! Steps: {stats['nodes_explored']}"
+            return "No solution found"
+
+        elif action_type == 'step':
+            self._reset_puzzle()
+            return self._solve_step_by_step(action_value)
+
+        elif action_type == 'compare':
+            self._reset_puzzle()
+            puzzle = [row[:] for row in self.board]
+
+            dfs_solver = DFSSolver()
+            _, dfs_stats = dfs_solver.solve([row[:] for row in puzzle])
+
+            heu_solver = HeuristicSolver()
+            _, heu_stats = heu_solver.solve([row[:] for row in puzzle])
+
+            dfs_steps = dfs_stats['nodes_explored']
+            heu_steps = heu_stats.get('nodes_explored', 0) + heu_stats.get('propagations', 0)
+
+            return f"DFS: {dfs_steps} | HS: {heu_steps} steps"
+
+        return ""
+
+    def _solve_step_by_step(self, algorithm: str) -> str:
+        """Solve with step-by-step visualization."""
+        if algorithm == 'dfs':
+            return self._step_dfs()
+        else:
+            return self._step_heuristic()
+
+    def _step_dfs(self) -> str:
+        """Step-by-step DFS solving."""
+        n = self.board_size
+        board = [row[:] for row in self.board]
+        steps = 0
+
+        def is_valid(row, col):
+            val = board[row][col]
+            if val is None:
+                return True
+
+            # Check row streaks
+            for i in range(max(0, col-2), min(n-3, col)+1):
+                if board[row][i] == board[row][i+1] == board[row][i+2] is not None:
+                    return False
+
+            # Check column streaks
+            for i in range(max(0, row-2), min(n-3, row)+1):
+                if board[i][col] == board[i+1][col] == board[i+2][col] is not None:
+                    return False
+
+            # Check row complete
+            if None not in board[row]:
+                if sum(board[row]) != n // 2:
+                    return False
+                for other in range(n):
+                    if other != row and board[other] == board[row]:
+                        return False
+
+            # Check column complete
+            col_vals = [board[r][col] for r in range(n)]
+            if None not in col_vals:
+                if sum(col_vals) != n // 2:
+                    return False
+                for other in range(n):
+                    other_col = [board[r][other] for r in range(n)]
+                    if other != col and other_col == col_vals:
+                        return False
+
+            return True
+
+        def solve(pos):
+            nonlocal steps
+            while pos < n * n:
+                row, col = pos // n, pos % n
+                if board[row][col] is None:
+                    break
+                pos += 1
+
+            if pos >= n * n:
+                return True
+
+            row, col = pos // n, pos % n
+
+            for val in [0, 1]:
+                board[row][col] = val
+                steps += 1
+                self.board = [r[:] for r in board]
+                self._draw()
+                self._draw_status(f"Step {steps}: Trying {val} at ({row},{col})")
+                pygame.display.flip()
+                time.sleep(self.delay_ms / 1000.0)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        return False
+
+                if is_valid(row, col) and solve(pos + 1):
+                    return True
+
+                board[row][col] = None
+
+            return False
+
+        if solve(0):
+            self.board = board
+            return f"Solved with DFS! Steps: {steps}"
+        return "No solution"
+
+    def _step_heuristic(self) -> str:
+        """Step-by-step heuristic solving."""
+        n = self.board_size
+        board = [row[:] for row in self.board]
+        steps = 0
+
+        def is_valid(row, col):
+            val = board[row][col]
+            if val is None:
+                return True
+
+            for i in range(max(0, col-2), min(n-3, col)+1):
+                if board[row][i] == board[row][i+1] == board[row][i+2] is not None:
+                    return False
+
+            for i in range(max(0, row-2), min(n-3, row)+1):
+                if board[i][col] == board[i+1][col] == board[i+2][col] is not None:
+                    return False
+
+            if None not in board[row]:
+                if sum(board[row]) != n // 2:
+                    return False
+                for other in range(n):
+                    if other != row and board[other] == board[row]:
+                        return False
+
+            col_vals = [board[r][col] for r in range(n)]
+            if None not in col_vals:
+                if sum(col_vals) != n // 2:
+                    return False
+                for other in range(n):
+                    other_col = [board[r][other] for r in range(n)]
+                    if other != col and other_col == col_vals:
+                        return False
+
+            return True
+
+        def apply_logical():
+            nonlocal steps
+            progress = True
+            while progress:
+                progress = False
+                for row in range(n):
+                    for col in range(n):
+                        if board[row][col] is not None:
+                            continue
+
+                        # Check triple patterns
+                        if col > 1 and board[row][col-1] is not None and board[row][col-1] == board[row][col-2]:
+                            board[row][col] = 1 - board[row][col-1]
+                            steps += 1
+                            progress = True
+                            continue
+
+                        if col < n-2 and board[row][col+1] is not None and board[row][col+1] == board[row][col+2]:
+                            board[row][col] = 1 - board[row][col+1]
+                            steps += 1
+                            progress = True
+                            continue
+
+                        if 0 < col < n-1 and board[row][col-1] is not None and board[row][col-1] == board[row][col+1]:
+                            board[row][col] = 1 - board[row][col-1]
+                            steps += 1
+                            progress = True
+                            continue
+
+                        if row > 1 and board[row-1][col] is not None and board[row-1][col] == board[row-2][col]:
+                            board[row][col] = 1 - board[row-1][col]
+                            steps += 1
+                            progress = True
+                            continue
+
+                        if row < n-2 and board[row+1][col] is not None and board[row+1][col] == board[row+2][col]:
+                            board[row][col] = 1 - board[row+1][col]
+                            steps += 1
+                            progress = True
+                            continue
+
+                        if 0 < row < n-1 and board[row-1][col] is not None and board[row-1][col] == board[row+1][col]:
+                            board[row][col] = 1 - board[row-1][col]
+                            steps += 1
+                            progress = True
+                            continue
+
+                        # Row balance
+                        row_0 = board[row].count(0)
+                        row_1 = board[row].count(1)
+                        if row_0 == n // 2:
+                            for c in range(n):
+                                if board[row][c] is None:
+                                    board[row][c] = 1
+                                    steps += 1
+                            progress = True
+                            continue
+                        if row_1 == n // 2:
+                            for c in range(n):
+                                if board[row][c] is None:
+                                    board[row][c] = 0
+                                    steps += 1
+                            progress = True
+                            continue
+
+                        # Column balance
+                        col_0 = sum(1 for r in range(n) if board[r][col] == 0)
+                        col_1 = sum(1 for r in range(n) if board[r][col] == 1)
+                        if col_0 == n // 2:
+                            for r in range(n):
+                                if board[r][col] is None:
+                                    board[r][col] = 1
+                                    steps += 1
+                            progress = True
+                            continue
+                        if col_1 == n // 2:
+                            for r in range(n):
+                                if board[r][col] is None:
+                                    board[r][col] = 0
+                                    steps += 1
+                            progress = True
+                            continue
+
+                self.board = [r[:] for r in board]
+                self._draw()
+                self._draw_status(f"Propagating... Steps: {steps}")
+                pygame.display.flip()
+                time.sleep(self.delay_ms / 1000.0)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        return False
+            return True
+
+        def solve():
+            nonlocal steps
+            saved = [r[:] for r in board]
+
+            if not apply_logical():
+                return False
+
+            # Find empty cell
+            for row in range(n):
+                for col in range(n):
+                    if board[row][col] is None:
+                        for val in [0, 1]:
+                            board[row][col] = val
+                            steps += 1
+                            self.board = [r[:] for r in board]
+                            self._draw()
+                            self._draw_status(f"Step {steps}: Trying {val} at ({row},{col})")
+                            pygame.display.flip()
+                            time.sleep(self.delay_ms / 1000.0)
+
+                            for event in pygame.event.get():
+                                if event.type == pygame.QUIT:
+                                    return False
+
+                            if is_valid(row, col) and solve():
+                                return True
+
+                            for r in range(n):
+                                for c in range(n):
+                                    board[r][c] = saved[r][c]
+                        return False
+
+            return True
+
+        if solve():
+            self.board = board
+            return f"Solved with HS! Steps: {steps}"
+        return "No solution"
+
+    def _draw(self):
+        """Draw everything."""
+        self.screen.fill(BACKGROUND_COLOR)
+        self._draw_board()
+        self._draw_buttons()
+
+    def run(self):
+        """Run the game loop."""
+        running = True
+        status_message = "Click cells to play or buttons to solve"
+
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button in [1, 3]:
+                        status_message = self._handle_click(event.pos, event.button) or status_message
+
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        self._reset_puzzle()
+                        status_message = "Puzzle reset"
+                    elif event.key == pygame.K_n:
+                        self._new_puzzle()
+                        status_message = "New puzzle"
+                    elif event.key == pygame.K_v:
+                        _, status_message = self._validate()
+
+            self._draw()
+            self._draw_status(status_message)
+            pygame.display.flip()
+
+        pygame.quit()
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Play Binairo interactively')
+    parser.add_argument('--size', type=int, default=6, choices=[6, 8, 10, 14, 20],
+                        help='Board size (default: 6)')
+    parser.add_argument('--difficulty', choices=['easy', 'medium', 'hard', 'very_hard'],
+                        default='medium', help='Puzzle difficulty (default: medium)')
+
+    args = parser.parse_args()
+
+    print("=" * 50)
+    print("BINAIRO GAME - NMAI Project")
+    print("=" * 50)
+    print(f"Board size: {args.size}x{args.size}")
+    print(f"Difficulty: {args.difficulty}")
+    print()
+    print("Controls:")
+    print("  Left click  : Place White (1) or clear")
+    print("  Right click : Place Black (0) or clear")
+    print("  N key       : New puzzle")
+    print("  R key       : Reset puzzle")
+    print("  V key       : Validate")
+    print("=" * 50)
+
+    game = BinairoGame(size=args.size, difficulty=args.difficulty)
+    game.run()
+
+
+if __name__ == "__main__":
+    main()
