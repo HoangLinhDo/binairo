@@ -26,10 +26,19 @@ except ImportError:
     PYGAME_AVAILABLE = False
     print("Error: pygame not installed. Install with: pip install pygame")
 
-from nmai_binairo.board import BinairoBoard
-from nmai_binairo.solver_dfs import DFSSolver
-from nmai_binairo.solver_heuristic import HeuristicSolver
-from nmai_binairo.testcases.puzzle_generator import PuzzleGenerator
+try:
+    # Preferred when running as package: `python -m nmai_binairo.play_game`
+    from nmai_binairo.board import BinairoBoard
+    from nmai_binairo.solver_dfs import DFSSolver
+    from nmai_binairo.solver_heuristic import HeuristicSolver
+    from nmai_binairo.testcases.puzzle_generator import PuzzleGenerator
+except Exception:
+    # Fallback when running script directly from inside the package folder:
+    # `cd nmai_binairo && python play_game.py`
+    from board import BinairoBoard
+    from solver_dfs import DFSSolver
+    from solver_heuristic import HeuristicSolver
+    from testcases.puzzle_generator import PuzzleGenerator
 
 # Colors
 WHITE = (255, 255, 255)

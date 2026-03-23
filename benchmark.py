@@ -16,9 +16,17 @@ from pathlib import Path
 # Add parent to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from nmai_binairo.solver_dfs import DFSSolver
-from nmai_binairo.solver_heuristic import HeuristicSolver
-from nmai_binairo.board import BinairoBoard
+try:
+    # Preferred when running as package: `python -m nmai_binairo.benchmark`
+    from nmai_binairo.solver_dfs import DFSSolver
+    from nmai_binairo.solver_heuristic import HeuristicSolver
+    from nmai_binairo.board import BinairoBoard
+except Exception:
+    # Fallback when running script directly from inside the package folder:
+    # `cd nmai_binairo && python benchmark.py`
+    from solver_dfs import DFSSolver
+    from solver_heuristic import HeuristicSolver
+    from board import BinairoBoard
 
 try:
     import matplotlib.pyplot as plt
@@ -537,7 +545,10 @@ def run_benchmark_cli():
     print("=" * 60)
 
     # Generate test puzzles
-    from nmai_binairo.testcases import TestCases
+    try:
+        from nmai_binairo.testcases import TestCases
+    except Exception:
+        from testcases import TestCases
     tc = TestCases()
 
     print("\nGenerating test puzzles...")

@@ -1025,3 +1025,32 @@ Generating 10 14x14 puzzles...
 2026-03-23 23:30:00,099 - INFO -   [10/10] Got puzzle with 148 empty cells
 2026-03-23 23:30:00,108 - INFO - COMPLETE: Generated 40 puzzles
 Saved to: /Users/dsv/Desktop/school/NMAI/BTL/code/nmai_binairo/testcases/testcases.json
+2026-03-23 23:33:46,349 - INFO - ============================================================
+2026-03-23 23:33:46,349 - INFO - BINAIRO TESTCASE GENERATOR
+2026-03-23 23:33:46,349 - INFO - ============================================================
+2026-03-23 23:33:46,349 - INFO - Sizes: [6, 8, 10, 14]
+2026-03-23 23:33:46,349 - INFO - Puzzles per size: 10
+2026-03-23 23:33:46,349 - INFO - Difficulty: hard
+2026-03-23 23:33:46,349 - INFO - Output: testcases.json
+2026-03-23 23:33:46,349 - INFO - Source: online
+2026-03-23 23:33:46,349 - INFO - ============================================================
+2026-03-23 23:33:46,349 - INFO - 
+Generating 10 6x6 puzzles...
+2026-03-23 23:33:46,349 - INFO - Using timeout: 30.0s for 6x6 boards
+2026-03-23 23:33:47,164 - INFO -   [1/10] Got puzzle with 28 empty cells
+2026-03-23 23:33:48,044 - INFO -   [2/10] Got puzzle with 26 empty cells
+2026-03-23 23:33:48,864 - INFO -   [3/10] Got puzzle with 27 empty cells
+2026-03-23 23:33:49,715 - INFO -   [4/10] Got puzzle with 28 empty cells
+2026-03-23 23:33:50,586 - INFO -   [5/10] Got puzzle with 26 empty cells
+2026-03-23 23:33:51,460 - INFO -   [6/10] Got puzzle with 27 empty cells
+2026-03-23 23:33:52,270 - INFO -   [7/10] Got puzzle with 27 empty cells
+2026-03-23 23:33:53,091 - INFO -   [8/10] Got puzzle with 29 empty cells
+2026-03-23 23:33:53,959 - INFO -   [9/10] Got puzzle with 25 empty cells
+2026-03-23 23:33:54,772 - INFO -   [10/10] Got puzzle with 27 empty cells
+2026-03-23 23:33:54,772 - INFO - 
+Generating 10 8x8 puzzles...
+2026-03-23 23:33:54,772 - INFO - Using timeout: 30.0s for 8x8 boards
+2026-03-23 23:33:55,642 - INFO -   [1/10] Got puzzle with 48 empty cells
+2026-03-23 23:33:56,463 - INFO -   [2/10] Got puzzle with 49 empty cells
+2026-03-23 23:33:57,308 - INFO -   [3/10] Got puzzle with 48 empty cells
+2026-03-23 23:33:58,150 - INFO -   [4/10] Got puzzle with 50 empty cells

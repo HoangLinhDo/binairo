@@ -12,11 +12,21 @@ from typing import Optional, List
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from nmai_binairo.board import BinairoBoard
-from nmai_binairo.constraints import BinairoConstraints
-from nmai_binairo.solver_dfs import DFSSolver, solve_dfs
-from nmai_binairo.solver_heuristic import HeuristicSolver, AdvancedHeuristicSolver, solve_heuristic
-from nmai_binairo.benchmark_utils import measure_performance, PerformanceStats
+try:
+    # Preferred when running as package: `python -m nmai_binairo.main`
+    from nmai_binairo.board import BinairoBoard
+    from nmai_binairo.constraints import BinairoConstraints
+    from nmai_binairo.solver_dfs import DFSSolver, solve_dfs
+    from nmai_binairo.solver_heuristic import HeuristicSolver, AdvancedHeuristicSolver, solve_heuristic
+    from nmai_binairo.benchmark_utils import measure_performance, PerformanceStats
+except Exception:
+    # Fallback when running script directly from inside the package folder:
+    # `cd nmai_binairo && python main.py`
+    from board import BinairoBoard
+    from constraints import BinairoConstraints
+    from solver_dfs import DFSSolver, solve_dfs
+    from solver_heuristic import HeuristicSolver, AdvancedHeuristicSolver, solve_heuristic
+    from benchmark_utils import measure_performance, PerformanceStats
 
 try:
     from testcases.puzzle_generator import PuzzleGenerator
@@ -256,7 +266,10 @@ def compare_with_original():
 def run_gui():
     """Run the GUI visualizer."""
     try:
-        from nmai_binairo.visualizer import BinairoVisualizer
+        try:
+            from nmai_binairo.visualizer import BinairoVisualizer
+        except Exception:
+            from visualizer import BinairoVisualizer
         vis = BinairoVisualizer(board_size=6)
 
         if TESTCASES_AVAILABLE:

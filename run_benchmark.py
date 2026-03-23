@@ -20,8 +20,15 @@ import argparse
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from nmai_binairo.benchmark import Benchmark, run_benchmark_cli
-from nmai_binairo.testcases import TestCases
+try:
+    # Preferred when running as package: `python -m nmai_binairo.run_benchmark`
+    from nmai_binairo.benchmark import Benchmark, run_benchmark_cli
+    from nmai_binairo.testcases import TestCases
+except Exception:
+    # Fallback when running script directly from inside the package folder:
+    # `cd nmai_binairo && python run_benchmark.py`
+    from benchmark import Benchmark, run_benchmark_cli
+    from testcases import TestCases
 
 
 def run_quick_benchmark():
