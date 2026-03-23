@@ -43,8 +43,12 @@ class OptimizedHeuristicSolver:
 
     def get_stats(self) -> Dict[str, Any]:
         """Get solver statistics."""
+        total_assignments = self.nodes_explored + self.propagations
         return {
-            'nodes_explored': self.nodes_explored,
+            # Use total assignment work for benchmark "steps" consistency.
+            # This counts both speculative branch attempts and deterministic fills.
+            'nodes_explored': total_assignments,
+            'decision_nodes': self.nodes_explored,
             'propagations': self.propagations,
             'backtracks': self.backtracks,
             'algorithm': 'Optimized Heuristic'

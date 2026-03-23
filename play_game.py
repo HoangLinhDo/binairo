@@ -69,6 +69,13 @@ class BinairoGame:
     BUTTON_MARGIN = 8
     PADDING = 20
 
+    # Keep large boards usable by shrinking cell size.
+    LARGE_BOARD_CELL_SIZE = {
+        20: 24,
+        14: 32,
+        10: 42,
+    }
+
     def __init__(self, size: int = 6, difficulty: str = "medium"):
         if not PYGAME_AVAILABLE:
             raise ImportError("pygame is required")
@@ -99,9 +106,11 @@ class BinairoGame:
 
     def _calculate_dimensions(self):
         """Calculate screen dimensions."""
-        self.board_pixel_size = self.board_size * (self.CELL_SIZE + self.GRID_THICKNESS) + self.GRID_THICKNESS
+        self.cell_size = self.LARGE_BOARD_CELL_SIZE.get(self.board_size, self.CELL_SIZE)
+        self.grid_thickness = self.GRID_THICKNESS
+        self.board_pixel_size = self.board_size * (self.cell_size + self.grid_thickness) + self.grid_thickness
         self.screen_width = max(self.board_pixel_size + 2 * self.PADDING,
-                                6 * (self.BUTTON_WIDTH + self.BUTTON_MARGIN))
+                                5 * (self.BUTTON_WIDTH + self.BUTTON_MARGIN))
         self.screen_height = (self.board_pixel_size + 3 * self.BUTTON_HEIGHT +
                               5 * self.BUTTON_MARGIN + 3 * self.PADDING + 30)
         self.board_x = (self.screen_width - self.board_pixel_size) // 2
@@ -283,17 +292,17 @@ class BinairoGame:
 
         # Draw grid
         for i in range(self.board_size + 1):
-            y = self.board_y + i * (self.CELL_SIZE + self.GRID_THICKNESS)
+            y = self.board_y + i * (self.cell_size + self.grid_thickness)
             pygame.draw.line(self.screen, GRID_COLOR,
-                           (self.board_x, y + self.GRID_THICKNESS // 2),
-                           (self.board_x + self.board_pixel_size, y + self.GRID_THICKNESS // 2),
-                           self.GRID_THICKNESS)
+                           (self.board_x, y + self.grid_thickness // 2),
+                           (self.board_x + self.board_pixel_size, y + self.grid_thickness // 2),
+                           self.grid_thickness)
 
-            x = self.board_x + i * (self.CELL_SIZE + self.GRID_THICKNESS)
+            x = self.board_x + i * (self.cell_size + self.grid_thickness)
             pygame.draw.line(self.screen, GRID_COLOR,
-                           (x + self.GRID_THICKNESS // 2, self.board_y),
-                           (x + self.GRID_THICKNESS // 2, self.board_y + self.board_pixel_size),
-                           self.GRID_THICKNESS)
+                           (x + self.grid_thickness // 2, self.board_y),
+                           (x + self.grid_thickness // 2, self.board_y + self.board_pixel_size),
+                           self.grid_thickness)
 
         # Draw cells
         for row in range(self.board_size):
@@ -308,12 +317,12 @@ class BinairoGame:
 
     def _draw_cell(self, row: int, col: int, value: int):
         """Draw a cell value."""
-        cell_x = self.board_x + col * (self.CELL_SIZE + self.GRID_THICKNESS) + self.GRID_THICKNESS
-        cell_y = self.board_y + row * (self.CELL_SIZE + self.GRID_THICKNESS) + self.GRID_THICKNESS
+        cell_x = self.board_x + col * (self.cell_size + self.grid_thickness) + self.grid_thickness
+        cell_y = self.board_y + row * (self.cell_size + self.grid_thickness) + self.grid_thickness
 
-        center_x = cell_x + self.CELL_SIZE // 2
-        center_y = cell_y + self.CELL_SIZE // 2
-        radius = self.CELL_SIZE // 2 - 4
+        center_x = cell_x + self.cell_size // 2
+        center_y = cell_y + self.cell_size // 2
+        radius = max(4, self.cell_size // 2 - 4)
 
         color = WHITE if value == 1 else BLACK
         pygame.draw.circle(self.screen, color, (center_x, center_y), radius)
@@ -324,10 +333,10 @@ class BinairoGame:
 
     def _draw_highlight(self, row: int, col: int):
         """Draw highlight on selected cell."""
-        cell_x = self.board_x + col * (self.CELL_SIZE + self.GRID_THICKNESS) + self.GRID_THICKNESS
-        cell_y = self.board_y + row * (self.CELL_SIZE + self.GRID_THICKNESS) + self.GRID_THICKNESS
+        cell_x = self.board_x + col * (self.cell_size + self.grid_thickness) + self.grid_thickness
+        cell_y = self.board_y + row * (self.cell_size + self.grid_thickness) + self.grid_thickness
 
-        highlight = pygame.Surface((self.CELL_SIZE, self.CELL_SIZE), pygame.SRCALPHA)
+        highlight = pygame.Surface((self.cell_size, self.cell_size), pygame.SRCALPHA)
         highlight.fill((255, 255, 0, 100))
         self.screen.blit(highlight, (cell_x, cell_y))
 
@@ -376,11 +385,11 @@ class BinairoGame:
         if (self.board_x <= x <= self.board_x + self.board_pixel_size and
             self.board_y <= y <= self.board_y + self.board_pixel_size):
 
-            rel_x = x - self.board_x - self.GRID_THICKNESS // 2
-            rel_y = y - self.board_y - self.GRID_THICKNESS // 2
+            rel_x = x - self.board_x - self.grid_thickness // 2
+            rel_y = y - self.board_y - self.grid_thickness // 2
 
-            col = rel_x // (self.CELL_SIZE + self.GRID_THICKNESS)
-            row = rel_y // (self.CELL_SIZE + self.GRID_THICKNESS)
+            col = rel_x // (self.cell_size + self.grid_thickness)
+            row = rel_y // (self.cell_size + self.grid_thickness)
 
             if 0 <= row < self.board_size and 0 <= col < self.board_size:
                 # Only modify cells that were originally empty
