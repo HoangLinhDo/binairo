@@ -13,6 +13,7 @@ Usage:
 
 import sys
 import os
+import json
 import argparse
 import time
 
@@ -32,6 +33,7 @@ try:
     from nmai_binairo.solver_dfs import DFSSolver
     from nmai_binairo.solver_heuristic import HeuristicSolver
     from nmai_binairo.testcases.puzzle_generator import PuzzleGenerator
+    from nmai_binairo.testcases.test_cases import TestcaseFetcher
 except Exception:
     # Fallback when running script directly from inside the package folder:
     # `cd nmai_binairo && python play_game.py`
@@ -39,6 +41,7 @@ except Exception:
     from solver_dfs import DFSSolver
     from solver_heuristic import HeuristicSolver
     from testcases.puzzle_generator import PuzzleGenerator
+    from testcases.test_cases import TestcaseFetcher
 
 # Colors
 WHITE = (255, 255, 255)
@@ -71,6 +74,7 @@ class BinairoGame:
             raise ImportError("pygame is required")
 
         self.generator = PuzzleGenerator()
+        self.fetcher = TestcaseFetcher()
         self.board_size = size
         self.difficulty = difficulty
         self.board = None
@@ -165,13 +169,55 @@ class BinairoGame:
             self.buttons.append((rect, label, action, color))
 
     def _new_puzzle(self):
-        """Generate a new puzzle."""
+        """Generate a new puzzle (prefer request source, then local fallback)."""
         diff_value = self.difficulty_map.get(self.difficulty, 0.55)
-        puzzle, solution = self.generator.generate_puzzle(self.board_size, diff_value)
+
+        puzzle = None
+        solution = None
+
+        # 1) Prefer online source (same behavior as fetch_testcases)
+        try:
+            puzzle = self.fetcher.fetch_random_puzzle(size=self.board_size, difficulty=self.difficulty)
+        except Exception as e:
+            print(f"Online fetch failed: {type(e).__name__}: {e}")
+
+        # 2) If online source fails, try local generator
+        if puzzle is None:
+            try:
+                puzzle, solution = self.generator.generate_puzzle(self.board_size, diff_value)
+            except Exception as e:
+                print(f"Local generation failed: {type(e).__name__}: {e}")
+
+        # 3) Last resort: load from cached testcases file to keep game running
+        if puzzle is None:
+            puzzle = self._load_cached_puzzle(self.board_size)
+
+        # 4) Absolute last fallback: empty board (prevents startup crash)
+        if puzzle is None:
+            puzzle = [[None for _ in range(self.board_size)] for _ in range(self.board_size)]
+
         self.board = [row[:] for row in puzzle]
         self.original_board = [row[:] for row in puzzle]
         self.solution = solution
         self.selected_cell = None
+
+    def _load_cached_puzzle(self, size: int):
+        """Load one puzzle from testcases.json as a safe fallback."""
+        try:
+            path = os.path.join(os.path.dirname(__file__), "testcases", "testcases.json")
+            if not os.path.exists(path):
+                return None
+
+            with open(path, "r") as f:
+                data = json.load(f)
+
+            puzzles = data.get(str(size), [])
+            if not puzzles:
+                return None
+
+            return puzzles[0].get("puzzle")
+        except Exception:
+            return None
 
     def _reset_puzzle(self):
         """Reset puzzle to original state."""
