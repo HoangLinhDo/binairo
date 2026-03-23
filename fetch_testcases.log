@@ -579,3 +579,356 @@ Generating 10 14x14 puzzles...
 2026-03-20 02:13:29,964 - INFO -   Solution found in attempt 1 after 0.47s for 14x14 board
 2026-03-20 02:13:30,544 - INFO -   [2/10] Generated puzzle with 98 empty cells
 2026-03-20 02:13:30,545 - INFO -   Solution generation attempt 1/5 for 14x14 board
+2026-03-23 23:10:18,829 - INFO - ============================================================
+2026-03-23 23:10:18,830 - INFO - BINAIRO TESTCASE GENERATOR
+2026-03-23 23:10:18,830 - INFO - ============================================================
+2026-03-23 23:10:18,830 - INFO - Sizes: [6, 8, 10, 14]
+2026-03-23 23:10:18,830 - INFO - Puzzles per size: 10
+2026-03-23 23:10:18,830 - INFO - Difficulty: hard
+2026-03-23 23:10:18,830 - INFO - Output: testcases.json
+2026-03-23 23:10:18,830 - INFO - ============================================================
+2026-03-23 23:10:18,830 - INFO - 
+Generating 10 6x6 puzzles...
+2026-03-23 23:10:18,830 - INFO - Using timeout: 30.0s for 6x6 boards
+2026-03-23 23:10:18,831 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:10:18,831 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:10:18,832 - INFO -   [1/10] Generated puzzle with 23 empty cells
+2026-03-23 23:10:18,832 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:10:18,832 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:10:18,834 - INFO -   [2/10] Generated puzzle with 23 empty cells
+2026-03-23 23:10:18,834 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:10:18,834 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:10:18,836 - INFO -   [3/10] Generated puzzle with 23 empty cells
+2026-03-23 23:10:18,836 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:10:18,836 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:10:18,838 - INFO -   [4/10] Generated puzzle with 23 empty cells
+2026-03-23 23:10:18,839 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:10:18,839 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:10:18,842 - INFO -   [5/10] Generated puzzle with 23 empty cells
+2026-03-23 23:10:18,842 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:10:18,842 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:10:18,843 - INFO -   [6/10] Generated puzzle with 23 empty cells
+2026-03-23 23:10:18,843 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:10:18,843 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:10:18,844 - INFO -   [7/10] Generated puzzle with 23 empty cells
+2026-03-23 23:10:18,844 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:10:18,844 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:10:18,848 - INFO -   [8/10] Generated puzzle with 23 empty cells
+2026-03-23 23:10:18,848 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:10:18,848 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:10:18,849 - INFO -   [9/10] Generated puzzle with 23 empty cells
+2026-03-23 23:10:18,849 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:10:18,850 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:10:18,852 - INFO -   [10/10] Generated puzzle with 23 empty cells
+2026-03-23 23:10:18,852 - INFO - 
+Generating 10 8x8 puzzles...
+2026-03-23 23:10:18,852 - INFO - Using timeout: 30.0s for 8x8 boards
+2026-03-23 23:10:18,852 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:10:18,856 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:10:18,860 - INFO -   [1/10] Generated puzzle with 41 empty cells
+2026-03-23 23:10:18,860 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:10:18,861 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:10:18,868 - INFO -   [2/10] Generated puzzle with 41 empty cells
+2026-03-23 23:10:18,868 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:10:18,869 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:10:18,879 - INFO -   [3/10] Generated puzzle with 41 empty cells
+2026-03-23 23:10:18,891 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:10:18,913 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:10:18,924 - INFO -   [4/10] Generated puzzle with 41 empty cells
+2026-03-23 23:10:18,924 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:10:18,925 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:10:18,941 - INFO -   [5/10] Generated puzzle with 41 empty cells
+2026-03-23 23:10:18,941 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:10:18,942 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:10:18,956 - INFO -   [6/10] Generated puzzle with 41 empty cells
+2026-03-23 23:10:18,956 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:10:18,956 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:10:18,973 - INFO -   [7/10] Generated puzzle with 41 empty cells
+2026-03-23 23:10:18,973 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:10:18,976 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:10:18,983 - INFO -   [8/10] Generated puzzle with 41 empty cells
+2026-03-23 23:10:18,985 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:10:18,988 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:10:18,995 - INFO -   [9/10] Generated puzzle with 41 empty cells
+2026-03-23 23:10:18,995 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:10:18,999 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:10:19,010 - INFO -   [10/10] Generated puzzle with 41 empty cells
+2026-03-23 23:10:19,010 - INFO - 
+Generating 10 10x10 puzzles...
+2026-03-23 23:10:19,010 - INFO - Using timeout: 60.0s for 10x10 boards
+2026-03-23 23:10:19,010 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:10:19,011 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:10:19,120 - INFO -   [1/10] Generated puzzle with 65 empty cells
+2026-03-23 23:10:19,120 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:10:19,128 - INFO -   Solution found in attempt 1 after 0.01s for 10x10 board
+2026-03-23 23:10:19,213 - INFO -   [2/10] Generated puzzle with 65 empty cells
+2026-03-23 23:10:19,214 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:10:19,217 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:10:19,257 - INFO -   [3/10] Generated puzzle with 65 empty cells
+2026-03-23 23:10:19,258 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:10:19,258 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:10:19,295 - INFO -   [4/10] Generated puzzle with 65 empty cells
+2026-03-23 23:10:19,295 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:10:19,295 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:10:19,336 - INFO -   [5/10] Generated puzzle with 65 empty cells
+2026-03-23 23:10:19,336 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:10:19,350 - INFO -   Solution found in attempt 1 after 0.01s for 10x10 board
+2026-03-23 23:10:19,366 - INFO -   [6/10] Generated puzzle with 65 empty cells
+2026-03-23 23:10:19,366 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:10:19,376 - INFO -   Solution found in attempt 1 after 0.01s for 10x10 board
+2026-03-23 23:10:19,415 - INFO -   [7/10] Generated puzzle with 65 empty cells
+2026-03-23 23:10:19,415 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:10:19,416 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:10:19,428 - INFO -   [8/10] Generated puzzle with 65 empty cells
+2026-03-23 23:10:19,428 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:10:19,621 - INFO -   Solution found in attempt 1 after 0.19s for 10x10 board
+2026-03-23 23:10:19,663 - INFO -   [9/10] Generated puzzle with 65 empty cells
+2026-03-23 23:10:19,663 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:10:19,670 - INFO -   Solution found in attempt 1 after 0.01s for 10x10 board
+2026-03-23 23:10:19,747 - INFO -   [10/10] Generated puzzle with 65 empty cells
+2026-03-23 23:10:19,747 - INFO - 
+Generating 10 14x14 puzzles...
+2026-03-23 23:10:19,747 - INFO - Using timeout: 180.0s for 14x14 boards
+2026-03-23 23:10:19,747 - INFO -   Solution generation attempt 1/5 for 14x14 board
+2026-03-23 23:11:07,476 - INFO -   Solution found in attempt 1 after 47.73s for 14x14 board
+2026-03-23 23:11:08,173 - INFO -   [1/10] Generated puzzle with 98 empty cells
+2026-03-23 23:11:08,173 - INFO -   Solution generation attempt 1/5 for 14x14 board
+2026-03-23 23:11:09,121 - INFO -   Solution found in attempt 1 after 0.95s for 14x14 board
+2026-03-23 23:11:09,209 - INFO -   [2/10] Generated puzzle with 98 empty cells
+2026-03-23 23:11:09,209 - INFO -   Solution generation attempt 1/5 for 14x14 board
+2026-03-23 23:14:09,210 - WARNING -   Attempt 1 failed after 180.00s, retrying...
+2026-03-23 23:14:09,212 - INFO -   Solution generation attempt 2/5 for 14x14 board
+2026-03-23 23:14:09,213 - INFO -   Solution found in attempt 2 after 0.00s for 14x14 board
+2026-03-23 23:14:09,350 - INFO -   [3/10] Generated puzzle with 98 empty cells
+2026-03-23 23:14:09,350 - INFO -   Solution generation attempt 1/5 for 14x14 board
+2026-03-23 23:14:42,941 - INFO - ============================================================
+2026-03-23 23:14:42,941 - INFO - BINAIRO TESTCASE GENERATOR
+2026-03-23 23:14:42,941 - INFO - ============================================================
+2026-03-23 23:14:42,942 - INFO - Sizes: [6, 8, 10, 14]
+2026-03-23 23:14:42,942 - INFO - Puzzles per size: 10
+2026-03-23 23:14:42,942 - INFO - Difficulty: hard
+2026-03-23 23:14:42,942 - INFO - Output: testcases.json
+2026-03-23 23:14:42,942 - INFO - ============================================================
+2026-03-23 23:14:42,942 - INFO - 
+Generating 10 6x6 puzzles...
+2026-03-23 23:14:42,942 - INFO - Using timeout: 30.0s for 6x6 boards
+2026-03-23 23:14:42,942 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:14:42,942 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:14:42,943 - INFO -   [1/10] Generated puzzle with 23 empty cells
+2026-03-23 23:14:42,943 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:14:42,943 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:14:42,944 - INFO -   [2/10] Generated puzzle with 23 empty cells
+2026-03-23 23:14:42,944 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:14:42,944 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:14:42,946 - INFO -   [3/10] Generated puzzle with 23 empty cells
+2026-03-23 23:14:42,946 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:14:42,946 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:14:42,948 - INFO -   [4/10] Generated puzzle with 23 empty cells
+2026-03-23 23:14:42,948 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:14:42,948 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:14:42,949 - INFO -   [5/10] Generated puzzle with 23 empty cells
+2026-03-23 23:14:42,949 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:14:42,949 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:14:42,950 - INFO -   [6/10] Generated puzzle with 23 empty cells
+2026-03-23 23:14:42,950 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:14:42,950 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:14:42,953 - INFO -   [7/10] Generated puzzle with 23 empty cells
+2026-03-23 23:14:42,953 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:14:42,953 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:14:42,956 - INFO -   [8/10] Generated puzzle with 23 empty cells
+2026-03-23 23:14:42,956 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:14:42,956 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:14:42,958 - INFO -   [9/10] Generated puzzle with 23 empty cells
+2026-03-23 23:14:42,958 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:14:42,958 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:14:42,958 - INFO -   [10/10] Generated puzzle with 23 empty cells
+2026-03-23 23:14:42,958 - INFO - 
+Generating 10 8x8 puzzles...
+2026-03-23 23:14:42,959 - INFO - Using timeout: 30.0s for 8x8 boards
+2026-03-23 23:14:42,959 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:14:42,959 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:14:42,964 - INFO -   [1/10] Generated puzzle with 41 empty cells
+2026-03-23 23:14:42,964 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:14:42,964 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:14:42,967 - INFO -   [2/10] Generated puzzle with 41 empty cells
+2026-03-23 23:14:42,967 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:14:42,968 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:14:42,974 - INFO -   [3/10] Generated puzzle with 41 empty cells
+2026-03-23 23:14:42,974 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:14:42,975 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:14:42,979 - INFO -   [4/10] Generated puzzle with 41 empty cells
+2026-03-23 23:14:42,979 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:14:42,984 - INFO -   Solution found in attempt 1 after 0.01s for 8x8 board
+2026-03-23 23:14:42,987 - INFO -   [5/10] Generated puzzle with 41 empty cells
+2026-03-23 23:14:42,987 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:14:42,989 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:14:42,994 - INFO -   [6/10] Generated puzzle with 41 empty cells
+2026-03-23 23:14:42,994 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:14:42,995 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:14:42,998 - INFO -   [7/10] Generated puzzle with 41 empty cells
+2026-03-23 23:14:42,998 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:14:42,999 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:14:43,007 - INFO -   [8/10] Generated puzzle with 41 empty cells
+2026-03-23 23:14:43,007 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:14:43,013 - INFO -   Solution found in attempt 1 after 0.01s for 8x8 board
+2026-03-23 23:14:43,016 - INFO -   [9/10] Generated puzzle with 41 empty cells
+2026-03-23 23:14:43,016 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:14:43,017 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:14:43,020 - INFO -   [10/10] Generated puzzle with 41 empty cells
+2026-03-23 23:14:43,022 - INFO - 
+Generating 10 10x10 puzzles...
+2026-03-23 23:14:43,022 - INFO - Using timeout: 60.0s for 10x10 boards
+2026-03-23 23:14:43,022 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:14:43,032 - INFO -   Solution found in attempt 1 after 0.01s for 10x10 board
+2026-03-23 23:14:43,259 - INFO -   [1/10] Generated puzzle with 65 empty cells
+2026-03-23 23:14:43,259 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:14:43,261 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:14:43,283 - INFO -   [2/10] Generated puzzle with 65 empty cells
+2026-03-23 23:14:43,283 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:14:43,287 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:14:43,411 - INFO -   [3/10] Generated puzzle with 65 empty cells
+2026-03-23 23:14:43,411 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:14:43,437 - INFO -   Solution found in attempt 1 after 0.03s for 10x10 board
+2026-03-23 23:14:43,454 - INFO -   [4/10] Generated puzzle with 65 empty cells
+2026-03-23 23:14:43,454 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:14:43,467 - INFO -   Solution found in attempt 1 after 0.01s for 10x10 board
+2026-03-23 23:14:43,715 - INFO -   [5/10] Generated puzzle with 65 empty cells
+2026-03-23 23:14:43,715 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:14:43,716 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:14:43,947 - INFO -   [6/10] Generated puzzle with 65 empty cells
+2026-03-23 23:14:43,948 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:14:43,954 - INFO -   Solution found in attempt 1 after 0.01s for 10x10 board
+2026-03-23 23:14:43,971 - INFO -   [7/10] Generated puzzle with 65 empty cells
+2026-03-23 23:14:43,971 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:14:43,991 - INFO -   Solution found in attempt 1 after 0.02s for 10x10 board
+2026-03-23 23:14:44,031 - INFO -   [8/10] Generated puzzle with 65 empty cells
+2026-03-23 23:14:44,031 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:14:44,032 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:14:44,043 - INFO -   [9/10] Generated puzzle with 65 empty cells
+2026-03-23 23:14:44,043 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:14:44,065 - INFO -   Solution found in attempt 1 after 0.02s for 10x10 board
+2026-03-23 23:14:44,080 - INFO -   [10/10] Generated puzzle with 65 empty cells
+2026-03-23 23:14:44,080 - INFO - 
+Generating 10 14x14 puzzles...
+2026-03-23 23:14:44,080 - INFO - Using timeout: 180.0s for 14x14 boards
+2026-03-23 23:14:44,080 - INFO -   Solution generation attempt 1/5 for 14x14 board
+2026-03-23 23:15:34,851 - INFO - ============================================================
+2026-03-23 23:15:34,852 - INFO - BINAIRO TESTCASE GENERATOR
+2026-03-23 23:15:34,852 - INFO - ============================================================
+2026-03-23 23:15:34,852 - INFO - Sizes: [6, 8, 10, 14]
+2026-03-23 23:15:34,853 - INFO - Puzzles per size: 10
+2026-03-23 23:15:34,853 - INFO - Difficulty: hard
+2026-03-23 23:15:34,853 - INFO - Output: testcases.json
+2026-03-23 23:15:34,853 - INFO - ============================================================
+2026-03-23 23:15:34,853 - INFO - 
+Generating 10 6x6 puzzles...
+2026-03-23 23:15:34,853 - INFO - Using timeout: 30.0s for 6x6 boards
+2026-03-23 23:15:34,853 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:15:34,853 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:15:34,854 - INFO -   [1/10] Generated puzzle with 23 empty cells
+2026-03-23 23:15:34,854 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:15:34,855 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:15:34,856 - INFO -   [2/10] Generated puzzle with 23 empty cells
+2026-03-23 23:15:34,856 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:15:34,857 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:15:34,860 - INFO -   [3/10] Generated puzzle with 23 empty cells
+2026-03-23 23:15:34,860 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:15:34,860 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:15:34,861 - INFO -   [4/10] Generated puzzle with 23 empty cells
+2026-03-23 23:15:34,861 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:15:34,862 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:15:34,863 - INFO -   [5/10] Generated puzzle with 23 empty cells
+2026-03-23 23:15:34,863 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:15:34,863 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:15:34,864 - INFO -   [6/10] Generated puzzle with 23 empty cells
+2026-03-23 23:15:34,864 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:15:34,864 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:15:34,865 - INFO -   [7/10] Generated puzzle with 23 empty cells
+2026-03-23 23:15:34,865 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:15:34,865 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:15:34,868 - INFO -   [8/10] Generated puzzle with 23 empty cells
+2026-03-23 23:15:34,868 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:15:34,868 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:15:34,869 - INFO -   [9/10] Generated puzzle with 23 empty cells
+2026-03-23 23:15:34,869 - INFO -   Solution generation attempt 1/5 for 6x6 board
+2026-03-23 23:15:34,869 - INFO -   Solution found in attempt 1 after 0.00s for 6x6 board
+2026-03-23 23:15:34,870 - INFO -   [10/10] Generated puzzle with 23 empty cells
+2026-03-23 23:15:34,870 - INFO - 
+Generating 10 8x8 puzzles...
+2026-03-23 23:15:34,870 - INFO - Using timeout: 30.0s for 8x8 boards
+2026-03-23 23:15:34,870 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:15:34,874 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:15:34,878 - INFO -   [1/10] Generated puzzle with 41 empty cells
+2026-03-23 23:15:34,878 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:15:34,879 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:15:34,893 - INFO -   [2/10] Generated puzzle with 41 empty cells
+2026-03-23 23:15:34,893 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:15:34,893 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:15:34,899 - INFO -   [3/10] Generated puzzle with 41 empty cells
+2026-03-23 23:15:34,899 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:15:34,900 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:15:34,908 - INFO -   [4/10] Generated puzzle with 41 empty cells
+2026-03-23 23:15:34,908 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:15:34,909 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:15:34,912 - INFO -   [5/10] Generated puzzle with 41 empty cells
+2026-03-23 23:15:34,912 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:15:34,914 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:15:34,950 - INFO -   [6/10] Generated puzzle with 41 empty cells
+2026-03-23 23:15:34,950 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:15:34,950 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:15:34,965 - INFO -   [7/10] Generated puzzle with 41 empty cells
+2026-03-23 23:15:34,965 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:15:34,967 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:15:35,006 - INFO -   [8/10] Generated puzzle with 41 empty cells
+2026-03-23 23:15:35,006 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:15:35,008 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:15:35,013 - INFO -   [9/10] Generated puzzle with 41 empty cells
+2026-03-23 23:15:35,013 - INFO -   Solution generation attempt 1/5 for 8x8 board
+2026-03-23 23:15:35,016 - INFO -   Solution found in attempt 1 after 0.00s for 8x8 board
+2026-03-23 23:15:35,021 - INFO -   [10/10] Generated puzzle with 41 empty cells
+2026-03-23 23:15:35,021 - INFO - 
+Generating 10 10x10 puzzles...
+2026-03-23 23:15:35,021 - INFO - Using timeout: 60.0s for 10x10 boards
+2026-03-23 23:15:35,021 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:15:35,021 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:15:35,043 - INFO -   [1/10] Generated puzzle with 65 empty cells
+2026-03-23 23:15:35,043 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:15:35,044 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:15:35,086 - INFO -   [2/10] Generated puzzle with 65 empty cells
+2026-03-23 23:15:35,086 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:15:35,201 - INFO -   Solution found in attempt 1 after 0.11s for 10x10 board
+2026-03-23 23:15:35,218 - INFO -   [3/10] Generated puzzle with 65 empty cells
+2026-03-23 23:15:35,218 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:15:35,219 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:15:35,246 - INFO -   [4/10] Generated puzzle with 65 empty cells
+2026-03-23 23:15:35,246 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:15:35,247 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:15:35,265 - INFO -   [5/10] Generated puzzle with 65 empty cells
+2026-03-23 23:15:35,265 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:15:35,271 - INFO -   Solution found in attempt 1 after 0.01s for 10x10 board
+2026-03-23 23:15:35,300 - INFO -   [6/10] Generated puzzle with 65 empty cells
+2026-03-23 23:15:35,301 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:15:35,305 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:15:35,317 - INFO -   [7/10] Generated puzzle with 65 empty cells
+2026-03-23 23:15:35,317 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:15:35,317 - INFO -   Solution found in attempt 1 after 0.00s for 10x10 board
+2026-03-23 23:15:35,352 - INFO -   [8/10] Generated puzzle with 65 empty cells
+2026-03-23 23:15:35,353 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:15:35,362 - INFO -   Solution found in attempt 1 after 0.01s for 10x10 board
+2026-03-23 23:15:35,379 - INFO -   [9/10] Generated puzzle with 65 empty cells
+2026-03-23 23:15:35,379 - INFO -   Solution generation attempt 1/5 for 10x10 board
+2026-03-23 23:15:35,399 - INFO -   Solution found in attempt 1 after 0.02s for 10x10 board
+2026-03-23 23:15:35,459 - INFO -   [10/10] Generated puzzle with 65 empty cells
+2026-03-23 23:15:35,459 - INFO - 
+Generating 10 14x14 puzzles...
+2026-03-23 23:15:35,459 - INFO - Using timeout: 180.0s for 14x14 boards
+2026-03-23 23:15:35,459 - INFO -   Solution generation attempt 1/5 for 14x14 board
+2026-03-23 23:15:35,469 - INFO -   Solution found in attempt 1 after 0.01s for 14x14 board
+2026-03-23 23:15:35,580 - INFO -   [1/10] Generated puzzle with 98 empty cells
+2026-03-23 23:15:35,581 - INFO -   Solution generation attempt 1/5 for 14x14 board
+2026-03-23 23:15:36,055 - INFO -   Solution found in attempt 1 after 0.47s for 14x14 board
+2026-03-23 23:15:36,118 - INFO -   [2/10] Generated puzzle with 98 empty cells
+2026-03-23 23:15:36,118 - INFO -   Solution generation attempt 1/5 for 14x14 board
+2026-03-23 23:15:36,260 - INFO -   Solution found in attempt 1 after 0.14s for 14x14 board
+2026-03-23 23:15:36,311 - INFO -   [3/10] Generated puzzle with 98 empty cells
+2026-03-23 23:15:36,311 - INFO -   Solution generation attempt 1/5 for 14x14 board

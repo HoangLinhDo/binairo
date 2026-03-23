@@ -34,8 +34,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-from nmai_binairo.testcases.puzzle_generator import PuzzleGenerator
-from nmai_binairo.testcases.test_cases import TestCases
+try:
+    # Preferred when running as package: `python -m nmai_binairo.fetch_testcases`
+    from nmai_binairo.testcases.puzzle_generator import PuzzleGenerator
+    from nmai_binairo.testcases.test_cases import TestCases
+except Exception:
+    # Fallback when running script directly from inside the package folder:
+    # `cd nmai_binairo && python fetch_testcases.py`
+    from testcases.puzzle_generator import PuzzleGenerator
+    from testcases.test_cases import TestCases
 
 
 def generate_testcases(sizes: List[int], count: int, difficulty: str,
