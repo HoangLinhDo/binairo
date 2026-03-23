@@ -13,10 +13,16 @@ try:
 except ImportError:
     PYGAME_AVAILABLE = False
 
-from .board import BinairoBoard
-from .constraints import BinairoConstraints
-from .solver_dfs import DFSSolver
-from .solver_heuristic import HeuristicSolver, AdvancedHeuristicSolver
+try:
+    from nmai_binairo.board import BinairoBoard
+    from nmai_binairo.constraints import BinairoConstraints
+    from nmai_binairo.solver_dfs import DFSSolver
+    from nmai_binairo.solver_heuristic import HeuristicSolver, AdvancedHeuristicSolver
+except ImportError:
+    from board import BinairoBoard
+    from constraints import BinairoConstraints
+    from solver_dfs import DFSSolver
+    from solver_heuristic import HeuristicSolver, AdvancedHeuristicSolver
 
 
 # Colors

@@ -11,7 +11,10 @@ Binairo Rules:
 """
 
 from typing import List, Optional, Tuple, Set
-from .board import BinairoBoard
+try:
+    from nmai_binairo.board import BinairoBoard
+except ImportError:
+    from board import BinairoBoard
 
 
 class BinairoConstraints:

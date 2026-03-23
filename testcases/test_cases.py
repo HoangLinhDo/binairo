@@ -231,7 +231,10 @@ class TestcaseFetcher:
 
     def _generate_locally(self, size: int, difficulty: str) -> Optional[List[List]]:
         """Generate puzzle locally as fallback."""
-        from .puzzle_generator import PuzzleGenerator
+        try:
+            from nmai_binairo.testcases.puzzle_generator import PuzzleGenerator
+        except ImportError:
+            from .puzzle_generator import PuzzleGenerator
 
         difficulty_map = {
             "easy": 0.4,
@@ -296,7 +299,10 @@ class TestCases:
         """
         sizes = sizes or [6, 8, 10]
 
-        from .puzzle_generator import PuzzleGenerator
+        try:
+            from nmai_binairo.testcases.puzzle_generator import PuzzleGenerator
+        except ImportError:
+            from .puzzle_generator import PuzzleGenerator
 
         difficulty_map = {
             "easy": 0.4,

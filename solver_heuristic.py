@@ -9,8 +9,12 @@ This solver is significantly more efficient than pure DFS by:
 """
 
 from typing import Optional, Tuple, Callable, Dict, Any, List, Set
-from .board import BinairoBoard
-from .constraints import BinairoConstraints
+try:
+    from nmai_binairo.board import BinairoBoard
+    from nmai_binairo.constraints import BinairoConstraints
+except ImportError:
+    from board import BinairoBoard
+    from constraints import BinairoConstraints
 
 
 class OptimizedHeuristicSolver:

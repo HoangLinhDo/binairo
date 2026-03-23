@@ -18,11 +18,18 @@ Usage:
     solution, stats = solver.solve(puzzle)
 """
 
-from .board import BinairoBoard
-from .constraints import BinairoConstraints
-from .solver_dfs import DFSSolver, solve_dfs
-from .solver_heuristic import HeuristicSolver, AdvancedHeuristicSolver, solve_heuristic
-from .benchmark_utils import measure_performance, PerformanceStats, PerformanceMonitor
+try:
+    from nmai_binairo.board import BinairoBoard
+    from nmai_binairo.constraints import BinairoConstraints
+    from nmai_binairo.solver_dfs import DFSSolver, solve_dfs
+    from nmai_binairo.solver_heuristic import HeuristicSolver, AdvancedHeuristicSolver, solve_heuristic
+    from nmai_binairo.benchmark_utils import measure_performance, PerformanceStats, PerformanceMonitor
+except ImportError:
+    from board import BinairoBoard
+    from constraints import BinairoConstraints
+    from solver_dfs import DFSSolver, solve_dfs
+    from solver_heuristic import HeuristicSolver, AdvancedHeuristicSolver, solve_heuristic
+    from benchmark_utils import measure_performance, PerformanceStats, PerformanceMonitor
 
 __version__ = '1.0.0'
 

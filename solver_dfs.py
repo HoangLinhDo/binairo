@@ -4,8 +4,13 @@ This is a blind search algorithm that explores solutions by trying values recurs
 """
 
 from typing import Optional, Tuple, Callable, Dict, Any, List
-from .board import BinairoBoard
-from .constraints import BinairoConstraints
+from typing import List, Optional
+try:
+    from nmai_binairo.board import BinairoBoard
+    from nmai_binairo.constraints import BinairoConstraints
+except ImportError:
+    from board import BinairoBoard
+    from constraints import BinairoConstraints
 
 
 class OptimizedDFSSolver:
