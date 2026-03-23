@@ -13,6 +13,7 @@ try:
     import requests
     REQUESTS_AVAILABLE = True
 except ImportError:
+    requests = None
     REQUESTS_AVAILABLE = False
 
 
@@ -21,8 +22,8 @@ class TestcaseFetcher:
     Fetches Binairo puzzles from online sources.
     """
 
-    # Base URL for binary puzzle
-    BASE_URL = "https://www.binarypuzzle.com"
+    # Base URL for online Binairo puzzles
+    BASE_URL = "https://www.puzzle-binairo.com"
 
     # Size mapping
     SIZE_MAP = {
@@ -37,9 +38,10 @@ class TestcaseFetcher:
     # Difficulty mapping
     DIFFICULTY_MAP = {
         "easy": "easy",
-        "medium": "medium",
+        # Site commonly serves easy/hard variants for standard sizes.
+        "medium": "hard",
         "hard": "hard",
-        "very_hard": "very-hard",
+        "very_hard": "hard",
     }
 
     def __init__(self, cache_dir: Optional[str] = None):
@@ -69,7 +71,8 @@ class TestcaseFetcher:
             return None
 
         try:
-            response = requests.get(url, timeout=10)
+            import requests as http_requests
+            response = http_requests.get(url, timeout=10)
             response.raise_for_status()
             return self._parse_puzzle_html(response.text)
         except Exception as e:
@@ -151,33 +154,80 @@ class TestcaseFetcher:
             print("Warning: requests library not available. Falling back to local generation.")
             return self._generate_locally(size, difficulty)
 
-        # Try to fetch from API
-        size_str = self.SIZE_MAP.get(size)
-        diff_str = self.DIFFICULTY_MAP.get(difficulty, "medium")
-
-        if size_str:
-            # Try binarypuzzle.com API
-            try:
-                import random
-                puzzle_id = random.randint(1, 1000)
-                url = f"{self.BASE_URL}/puzzles.php?size={size_str}&level={diff_str}&nr={puzzle_id}"
-                print(f"Fetching puzzle from API: {size}x{size} {difficulty}...")
-
-                response = requests.get(url, timeout=15)
-                response.raise_for_status()
-
-                result = self._parse_puzzle_html(response.text)
-                if result:
-                    puzzle, parsed_size = result
-                    if parsed_size == size:
-                        print(f"Successfully fetched {size}x{size} puzzle from API")
-                        return puzzle
-            except Exception as e:
-                print(f"API fetch failed: {e}")
+        # Try to fetch from puzzle-binairo.com HTML and decode embedded `task`.
+        try:
+            puzzle = self._fetch_from_puzzle_binairo(size=size, difficulty=difficulty)
+            if puzzle is not None:
+                print(f"Successfully fetched {size}x{size} puzzle from request")
+                return puzzle
+        except Exception as e:
+            print(f"Request fetch failed: {e}")
 
         # Fall back to local generation
         print(f"Falling back to local generation for {size}x{size} puzzle...")
         return self._generate_locally(size, difficulty)
+
+    def _fetch_from_puzzle_binairo(self, size: int, difficulty: str) -> Optional[List[List]]:
+        """Fetch puzzle page HTML and decode the embedded `task` string."""
+        if size not in self.SIZE_MAP:
+            return None
+
+        diff_slug = self.DIFFICULTY_MAP.get(difficulty, "hard")
+        path = f"/binairo-{size}x{size}-{diff_slug}/"
+        url = f"{self.BASE_URL}{path}"
+
+        import requests as http_requests
+        response = http_requests.get(url, timeout=20)
+        response.raise_for_status()
+        html = response.text
+
+        # Example in page source:
+        # var task = '...'; ... puzzleWidth: 20, puzzleHeight: 20
+        task_match = re.search(r"var\s+task\s*=\s*'([^']+)'", html)
+        w_match = re.search(r"puzzleWidth\s*:\s*(\d+)", html)
+        h_match = re.search(r"puzzleHeight\s*:\s*(\d+)", html)
+
+        if not task_match:
+            return None
+
+        width = int(w_match.group(1)) if w_match else size
+        height = int(h_match.group(1)) if h_match else size
+        if width != size or height != size:
+            return None
+
+        return self._decode_task_to_grid(task_match.group(1), width, height)
+
+    def _decode_task_to_grid(self, task: str, width: int, height: int) -> Optional[List[List]]:
+        """
+        Decode site `task` format into a puzzle grid.
+
+        Encoding used by puzzle-binairo pages:
+        - `a`..`z`: run-length of empty cells where `a=1`, `b=2`, ..., `z=26`
+        - `0` or `1`: fixed cell values
+        """
+        total = width * height
+        cells: List[Optional[int]] = []
+
+        for ch in task:
+            if 'a' <= ch <= 'z':
+                cells.extend([None] * (ord(ch) - ord('a') + 1))
+            elif ch == '0':
+                cells.append(0)
+            elif ch == '1':
+                cells.append(1)
+
+            if len(cells) > total:
+                return None
+
+        if len(cells) != total:
+            return None
+
+        puzzle: List[List[Optional[int]]] = []
+        for i in range(height):
+            row = cells[i * width:(i + 1) * width]
+            puzzle.append(row)
+
+        return puzzle
 
     def _generate_locally(self, size: int, difficulty: str) -> Optional[List[List]]:
         """Generate puzzle locally as fallback."""
@@ -231,7 +281,7 @@ class TestCases:
         self.testcases_dir = Path(testcases_dir)
         self.fetcher = TestcaseFetcher(cache_dir=str(self.testcases_dir / "cache"))
 
-    def get_test_puzzles(self, sizes: List[int] = None, count: int = 5,
+    def get_test_puzzles(self, sizes: Optional[List[int]] = None, count: int = 5,
                          difficulty: str = "medium") -> dict:
         """
         Get test puzzles for benchmarking.

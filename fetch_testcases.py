@@ -37,16 +37,16 @@ logger = logging.getLogger(__name__)
 try:
     # Preferred when running as package: `python -m nmai_binairo.fetch_testcases`
     from nmai_binairo.testcases.puzzle_generator import PuzzleGenerator
-    from nmai_binairo.testcases.test_cases import TestCases
+    from nmai_binairo.testcases.test_cases import TestCases, TestcaseFetcher
 except Exception:
     # Fallback when running script directly from inside the package folder:
     # `cd nmai_binairo && python fetch_testcases.py`
     from testcases.puzzle_generator import PuzzleGenerator
-    from testcases.test_cases import TestCases
+    from testcases.test_cases import TestCases, TestcaseFetcher
 
 
 def generate_testcases(sizes: List[int], count: int, difficulty: str,
-                       output_file: str, seed: int = None):
+                       output_file: str, seed: int = None, source: str = "online"):
     """
     Generate test cases and save them.
 
@@ -64,6 +64,7 @@ def generate_testcases(sizes: List[int], count: int, difficulty: str,
     logger.info(f"Puzzles per size: {count}")
     logger.info(f"Difficulty: {difficulty}")
     logger.info(f"Output: {output_file}")
+    logger.info(f"Source: {source}")
     if seed is not None:
         logger.info(f"Seed: {seed}")
     logger.info("=" * 60)
@@ -75,6 +76,7 @@ def generate_testcases(sizes: List[int], count: int, difficulty: str,
     print(f"Puzzles per size: {count}")
     print(f"Difficulty: {difficulty}")
     print(f"Output: {output_file}")
+    print(f"Source: {source}")
     if seed is not None:
         print(f"Seed: {seed}")
     print("=" * 60)
@@ -88,6 +90,7 @@ def generate_testcases(sizes: List[int], count: int, difficulty: str,
         "very_hard": 0.75,
     }
     diff_value = difficulty_map.get(difficulty, 0.55)
+    fetcher = TestcaseFetcher()
 
     all_puzzles = {}
     total_generated = 0
@@ -115,8 +118,22 @@ def generate_testcases(sizes: List[int], count: int, difficulty: str,
 
         for i in range(count):
             try:
-                logger.debug(f"  [{i+1}/{count}] Starting generation...")
-                puzzle, solution = generator.generate_puzzle(size, diff_value)
+                logger.debug(f"  [{i+1}/{count}] Starting puzzle acquisition...")
+
+                puzzle = None
+                solution = None
+
+                if source in ("online", "hybrid"):
+                    puzzle = fetcher.fetch_random_puzzle(size=size, difficulty=difficulty)
+
+                if puzzle is None and source in ("local", "hybrid"):
+                    puzzle, solution = generator.generate_puzzle(size, diff_value)
+
+                if puzzle is None:
+                    raise RuntimeError(
+                        f"Failed to obtain puzzle from source='{source}' for {size}x{size}."
+                    )
+
                 empty_cells = sum(1 for row in puzzle for cell in row if cell is None)
                 puzzles.append({
                     'puzzle': puzzle,
@@ -126,7 +143,7 @@ def generate_testcases(sizes: List[int], count: int, difficulty: str,
                     'empty_cells': empty_cells
                 })
                 total_generated += 1
-                msg = f"  [{i+1}/{count}] Generated puzzle with {empty_cells} empty cells"
+                msg = f"  [{i+1}/{count}] Got puzzle with {empty_cells} empty cells"
                 logger.info(msg)
                 print(msg)
 
@@ -250,6 +267,8 @@ Examples:
                         help='Output file name (default: testcases.json)')
     parser.add_argument('--seed', type=int, default=None,
                         help='Random seed for reproducibility')
+    parser.add_argument('--source', choices=['online', 'local', 'hybrid'], default='online',
+                        help='Puzzle source: online request, local generation, or hybrid fallback (default: online)')
     parser.add_argument('--list', action='store_true',
                         help='List existing testcases')
     parser.add_argument('--show', type=int, nargs=2, metavar=('SIZE', 'INDEX'),
@@ -269,7 +288,8 @@ Examples:
             count=args.count,
             difficulty=args.difficulty,
             output_file=args.output,
-            seed=args.seed
+            seed=args.seed,
+            source=args.source
         )
 
 
