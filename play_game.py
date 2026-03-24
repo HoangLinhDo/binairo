@@ -61,6 +61,9 @@ BOARD_COLOR = (128, 98, 82)
 BACKGROUND_COLOR = (45, 45, 60)
 GRID_COLOR = (0, 180, 0)
 BUTTON_COLOR = (0, 128, 255)
+MODAL_BG = (18, 18, 28, 230)
+MODAL_PANEL = (52, 58, 76)
+MODAL_ACCENT = (0, 170, 120)
 
 
 class BinairoGame:
@@ -95,6 +98,10 @@ class BinairoGame:
         self.selected_cell = None
         self.solving = False
         self.delay_ms = 100
+        self.player_steps = 0
+        self.puzzle_start_time = time.perf_counter()
+        self.puzzle_completed = False
+        self.completion_modal = None
 
         # Difficulty mapping
         self.difficulty_map = {
@@ -125,7 +132,11 @@ class BinairoGame:
         solver = DFSSolver() if algorithm == 'dfs' else HeuristicSolver()
 
         gc.collect()
-        tracemalloc.start()
+        was_tracing = tracemalloc.is_tracing()
+        if not was_tracing:
+            tracemalloc.start()
+        else:
+            tracemalloc.reset_peak()
         start_time = time.perf_counter()
 
         try:
@@ -138,11 +149,70 @@ class BinairoGame:
 
         elapsed = time.perf_counter() - start_time
         _, peak = tracemalloc.get_traced_memory()
-        tracemalloc.stop()
+        if not was_tracing:
+            tracemalloc.stop()
 
         peak_mb = peak / (1024 * 1024)
         steps = self._compute_steps(algorithm, stats)
         return solution, stats, solved, elapsed, peak_mb, steps
+
+    def _start_puzzle_tracking(self):
+        """Reset counters for a fresh puzzle attempt."""
+        self.player_steps = 0
+        self.puzzle_start_time = time.perf_counter()
+        self.puzzle_completed = False
+        self.completion_modal = None
+        if not tracemalloc.is_tracing():
+            tracemalloc.start()
+        tracemalloc.reset_peak()
+
+    def _show_completion_modal(self, mode: str, elapsed: float, peak_mb: float, steps: int):
+        """Open completion modal with puzzle statistics."""
+        self.completion_modal = {
+            "title": "Puzzle Completed",
+            "mode": mode,
+            "time": elapsed,
+            "memory": peak_mb,
+            "steps": steps,
+        }
+        self.puzzle_completed = True
+
+    def _draw_completion_modal(self):
+        """Draw completion modal if available."""
+        if not self.completion_modal:
+            return
+
+        overlay = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
+        overlay.fill(MODAL_BG)
+        self.screen.blit(overlay, (0, 0))
+
+        panel_w = min(520, self.screen_width - 80)
+        panel_h = 260
+        panel_x = (self.screen_width - panel_w) // 2
+        panel_y = (self.screen_height - panel_h) // 2
+
+        panel_rect = pygame.Rect(panel_x, panel_y, panel_w, panel_h)
+        pygame.draw.rect(self.screen, MODAL_PANEL, panel_rect, border_radius=14)
+        pygame.draw.rect(self.screen, MODAL_ACCENT, panel_rect, width=3, border_radius=14)
+
+        title_text = self.title_font.render(self.completion_modal["title"], True, WHITE)
+        title_rect = title_text.get_rect(center=(self.screen_width // 2, panel_y + 45))
+        self.screen.blit(title_text, title_rect)
+
+        mode_text = self.font.render(f"Mode: {self.completion_modal['mode']}", True, LIGHT_GRAY)
+        self.screen.blit(mode_text, (panel_x + 30, panel_y + 90))
+
+        time_text = self.font.render(f"Time: {self.completion_modal['time']:.6f}s", True, WHITE)
+        mem_text = self.font.render(f"Memory: {self.completion_modal['memory']:.4f} MB", True, WHITE)
+        steps_text = self.font.render(f"Steps: {self.completion_modal['steps']}", True, WHITE)
+
+        self.screen.blit(time_text, (panel_x + 30, panel_y + 125))
+        self.screen.blit(mem_text, (panel_x + 30, panel_y + 160))
+        self.screen.blit(steps_text, (panel_x + 30, panel_y + 195))
+
+        hint_text = self.small_font.render("Press ESC/ENTER or click to close", True, LIGHT_GRAY)
+        hint_rect = hint_text.get_rect(center=(self.screen_width // 2, panel_y + panel_h - 25))
+        self.screen.blit(hint_text, hint_rect)
 
     def _save_solve_log(self, algorithm: str, mode: str, solved: bool,
                         steps: int, elapsed: float, peak_mb: float) -> Path:
@@ -276,6 +346,7 @@ class BinairoGame:
         self.original_board = [row[:] for row in puzzle]
         self.solution = solution
         self.selected_cell = None
+        self._start_puzzle_tracking()
 
     def _load_cached_puzzle(self, size: int):
         """Load one puzzle from testcases.json as a safe fallback."""
@@ -300,6 +371,7 @@ class BinairoGame:
         if self.original_board:
             self.board = [row[:] for row in self.original_board]
             self.selected_cell = None
+            self._start_puzzle_tracking()
 
     def _validate(self) -> tuple:
         """Validate current board state. Returns (is_valid, message)."""
@@ -441,6 +513,10 @@ class BinairoGame:
 
     def _handle_click(self, pos: tuple, button: int):
         """Handle mouse click."""
+        if self.completion_modal:
+            self.completion_modal = None
+            return ""
+
         x, y = pos
 
         # Check button clicks
@@ -461,10 +537,30 @@ class BinairoGame:
             if 0 <= row < self.board_size and 0 <= col < self.board_size:
                 # Only modify cells that were originally empty
                 if self.original_board[row][col] is None:
+                    previous = self.board[row][col]
                     if button == 1:  # Left click = White (1)
                         self.board[row][col] = 1 if self.board[row][col] != 1 else None
                     elif button == 3:  # Right click = Black (0)
                         self.board[row][col] = 0 if self.board[row][col] != 0 else None
+
+                    if self.board[row][col] != previous:
+                        self.player_steps += 1
+
+                        if (not self.puzzle_completed and
+                            all(cell is not None for row_vals in self.board for cell in row_vals)):
+                            is_valid, _ = self._validate()
+                            if is_valid:
+                                elapsed = time.perf_counter() - self.puzzle_start_time
+                                peak_mb = 0.0
+                                if tracemalloc.is_tracing():
+                                    _, peak = tracemalloc.get_traced_memory()
+                                    peak_mb = peak / (1024 * 1024)
+                                self._show_completion_modal(
+                                    mode="Manual Play",
+                                    elapsed=elapsed,
+                                    peak_mb=peak_mb,
+                                    steps=self.player_steps,
+                                )
                 self.selected_cell = (row, col)
 
         return ""
@@ -510,23 +606,34 @@ class BinairoGame:
 
             if solution:
                 self.board = solution
+                self._show_completion_modal(
+                    mode=f"Solve {action_value.upper()}",
+                    elapsed=elapsed,
+                    peak_mb=peak_mb,
+                    steps=steps,
+                )
                 return (
-                    f"Solved! Steps: {steps} | Time: {elapsed:.4f}s | "
-                    f"Mem: {peak_mb:.2f}MB | Log: {log_path.name}"
+                    f"Solved! Steps: {steps} | Time: {elapsed:.6f}s | "
+                    f"Mem: {peak_mb:.4f}MB | Log: {log_path.name}"
                 )
             return f"No solution found | Log: {log_path.name}"
 
         elif action_type == 'step':
             self._reset_puzzle()
             gc.collect()
-            tracemalloc.start()
+            was_tracing = tracemalloc.is_tracing()
+            if not was_tracing:
+                tracemalloc.start()
+            else:
+                tracemalloc.reset_peak()
             start_time = time.perf_counter()
 
             solved, steps, msg = self._solve_step_by_step(action_value)
 
             elapsed = time.perf_counter() - start_time
             _, peak = tracemalloc.get_traced_memory()
-            tracemalloc.stop()
+            if not was_tracing:
+                tracemalloc.stop()
             peak_mb = peak / (1024 * 1024)
 
             log_path = self._save_solve_log(
@@ -537,7 +644,14 @@ class BinairoGame:
                 elapsed=elapsed,
                 peak_mb=peak_mb,
             )
-            return f"{msg} | Time: {elapsed:.4f}s | Mem: {peak_mb:.2f}MB | Log: {log_path.name}"
+            if solved:
+                self._show_completion_modal(
+                    mode=f"Step {action_value.upper()}",
+                    elapsed=elapsed,
+                    peak_mb=peak_mb,
+                    steps=steps,
+                )
+            return f"{msg} | Time: {elapsed:.6f}s | Mem: {peak_mb:.4f}MB | Log: {log_path.name}"
 
         elif action_type == 'compare':
             self._reset_puzzle()
@@ -564,8 +678,8 @@ class BinairoGame:
             )
 
             return (
-                f"DFS: {dfs_steps} steps ({dfs_elapsed:.4f}s) | "
-                f"HS: {heu_steps} steps ({hs_elapsed:.4f}s)"
+                f"DFS: {dfs_steps} steps ({dfs_elapsed:.6f}s) | "
+                f"HS: {heu_steps} steps ({hs_elapsed:.6f}s)"
             )
 
         return ""
@@ -847,6 +961,9 @@ class BinairoGame:
                         status_message = self._handle_click(event.pos, event.button) or status_message
 
                 elif event.type == pygame.KEYDOWN:
+                    if self.completion_modal and event.key in (pygame.K_ESCAPE, pygame.K_RETURN, pygame.K_SPACE):
+                        self.completion_modal = None
+                        continue
                     if event.key == pygame.K_r:
                         self._reset_puzzle()
                         status_message = "Puzzle reset"
@@ -858,6 +975,7 @@ class BinairoGame:
 
             self._draw()
             self._draw_status(status_message)
+            self._draw_completion_modal()
             pygame.display.flip()
 
         pygame.quit()

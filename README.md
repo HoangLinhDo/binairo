@@ -1,162 +1,174 @@
 # NMAI Binairo Solver
 
-A complete Binairo puzzle solver implementing **DFS (Depth-First Search)** and **Heuristic Search** algorithms for the NMAI course project.
+Binairo/Takuzu solver and tooling for the NMAI project.
 
-## Features
+This repository includes:
 
-- **Two Solving Algorithms**:
-  - DFS (Depth-First Search) - Blind backtracking search
-  - Heuristic Search - Constraint propagation with logical deductions
+- A playable Pygame app
+- DFS and heuristic solvers
+- Testcase generation/fetching utilities
+- Benchmarking with time/memory/step comparisons and plots
 
-- **Interactive Game**: Play Binairo puzzles with a Pygame GUI
-- **Benchmarking**: Compare algorithm performance with graphs
-- **Testcase Generation**: Generate puzzles of various sizes and difficulties
+## What Is Included
 
-## Project Structure
+- `DFSSolver`: backtracking depth-first search
+- `HeuristicSolver`: constraint propagation + guided search
+- `AdvancedHeuristicSolver`: optimized heuristic variant
+- Interactive game in `play_game.py`
+- CLI solver and comparison entrypoint in `main.py`
+- Benchmark runner in `run_benchmark.py`
+- Testcase manager in `fetch_testcases.py`
 
-```
-nmai_binairo/
-├── __init__.py           # Package initialization
-├── board.py              # Board representation
-├── constraints.py        # Constraint validation
-├── solver_dfs.py         # DFS solver implementation
-├── solver_heuristic.py   # Heuristic solver implementation
-├── benchmark.py          # Benchmark utilities with plotting
-├── benchmark_utils.py    # Performance measurement utilities
-├── visualizer.py         # Pygame visualization
-├── play_game.py          # Interactive game script
-├── fetch_testcases.py    # Testcase generator script
-├── run_benchmark.py      # Benchmark runner script
-├── testcases/            # Test cases and cache
-│   ├── __init__.py
-│   ├── puzzle_generator.py
-│   └── test_cases.py
-└── results/              # Benchmark results
-```
+## Requirements
+
+- Python 3.8+
+- Dependencies from `requirements.txt`:
+  - `pygame`
+  - `matplotlib`
+  - `numpy`
+  - `requests`
 
 ## Installation
 
 ```bash
-# Install dependencies
-pip install pygame matplotlib numpy requests
-
-# Or use requirements.txt
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+## Run Modes
+
+Most scripts support both styles:
+
+1. Run directly from this folder
+2. Run as a package module
+
+Examples:
+
+```bash
+# Direct script mode
+python play_game.py
+
+# Package mode
+python -m nmai_binairo.play_game
 ```
 
 ## Quick Start
 
-### 1. Play the Game
+### 1. Play The Game
 
 ```bash
-# Start with default 6x6 puzzle
 python play_game.py
-
-# Start with specific size
 python play_game.py --size 10
-
-# Start with hard difficulty
 python play_game.py --difficulty hard
 ```
 
-**Game Controls**:
-- Left click: Place White (1) or clear
-- Right click: Place Black (0) or clear
-- N key: New puzzle
-- R key: Reset puzzle
-- V key: Validate board
+Controls:
 
-### 2. Generate Testcases
+- Left click: place white (1) / clear
+- Right click: place black (0) / clear
+- `N`: new puzzle
+- `R`: reset puzzle
+- `V`: validate current board
+
+Solver buttons in the UI:
+
+- `Solve DFS`
+- `Solve HS`
+- `Step DFS`
+- `Step HS`
+- `Compare`
+
+When a puzzle is completed, a modal is shown with:
+
+- Time
+- Peak memory
+- Steps
+
+Close the modal with click, `Esc`, `Enter`, or `Space`.
+
+### 2. Generate Or Inspect Testcases
 
 ```bash
-# Generate default testcases (5 puzzles each for 6x6, 8x8, 10x10)
+# Generate defaults (sizes 6, 8, 10; count 5)
 python fetch_testcases.py
 
-# Generate custom testcases
+# Custom generation
 python fetch_testcases.py --sizes 6 8 10 14 --count 10 --difficulty hard
 
-# List existing testcases
-python fetch_testcases.py --list
+# Choose source: online | local | hybrid
+python fetch_testcases.py --source hybrid
 
-# Show a specific puzzle
-python fetch_testcases.py --show 6 1
+# List available puzzles in a testcase file
+python fetch_testcases.py --list --input testcases.json
+
+# Show puzzle by size and index
+python fetch_testcases.py --show 6 1 --input testcases.json
 ```
 
 ### 3. Run Benchmarks
 
 ```bash
-# Quick benchmark demo
+# Quick demo
 python run_benchmark.py --quick
 
-# Full benchmark with graphs
+# Full benchmark
 python run_benchmark.py
 
 # Custom benchmark
 python run_benchmark.py --sizes 6 8 10 14 --count 10 --difficulty medium
 
-# Benchmark with detailed 3-metric plot
+# Generate detailed 3-metric plot
 python run_benchmark.py --detailed-plot
 
-# Save results without showing
-python run_benchmark.py --no-show --save-plot benchmark.png
+# Save plot without showing window
+python run_benchmark.py --no-show --save-plot results/benchmark.png
+
+# Save JSON benchmark output
+python run_benchmark.py --output results/benchmark.json
 ```
 
-## Benchmark Output
+## Main CLI (Solver/Compare)
 
-The benchmark generates:
-1. **Console Summary**: Time, memory, and steps comparison
-2. **Comparison Graphs**: Bar charts comparing DFS vs Heuristic Search
-3. **JSON Results**: Detailed results saved to file
+`main.py` provides a compact command interface:
 
-Example output:
-```
-================================================================================
-BENCHMARK SUMMARY
-================================================================================
+```bash
+# Open visualizer
+python main.py --gui
 
-Average Time (seconds):
-6x6       |     0.0012s           |     0.0008s
-8x8       |     0.0234s           |     0.0045s
-10x10     |     0.5672s           |     0.0123s
+# Solve generated puzzle
+python main.py --solve 8 --algo heuristic
+python main.py --solve 8 --algo dfs
+python main.py --solve 8 --algo advanced
 
-Average Peak Memory (MB):
-6x6       |       0.12 MB         |       0.08 MB
-8x8       |       0.45 MB         |       0.15 MB
-10x10     |       2.34 MB         |       0.32 MB
+# Solve from puzzle string (. means empty)
+python main.py --puzzle ".1..0..." --algo heuristic
 
-Average Steps (Nodes Explored):
-6x6       |             245       |              32
-8x8       |           12456       |             156
-10x10     |          456789       |             512
+# Benchmark via main entrypoint
+python main.py --benchmark --sizes 6 8 10 --runs 3
+
+# Compare all solvers
+python main.py --compare
 ```
 
-## Algorithm Details
+## Metrics
 
-### DFS (Depth-First Search)
-- Pure backtracking algorithm
-- Tries values (0, 1) at each empty cell
-- Validates constraints after each placement
-- Backtracks when constraint violation detected
+The project reports three key metrics:
 
-### Heuristic Search
-- Uses constraint propagation before guessing
-- Applies logical deductions:
-  - No-triple rule: If XX?, fill opposite
-  - Balance rule: If row has n/2 of one value, fill rest with other
-- Reduces search space significantly
+1. Time (seconds)
+2. Peak memory (MB)
+3. Steps (search effort)
 
-## Metrics Tracked
+Notes:
 
-1. **Time (seconds)**: Wall clock solving time
-2. **Memory (MB)**: Peak memory usage during solving
-3. **Steps**: Number of nodes explored (cell assignments tried)
+- In benchmark/game logs, step semantics are normalized per solver implementation.
+- Compare solver results using the same puzzle set and difficulty for fairness.
 
-## API Usage
+## Python API Example
 
 ```python
-from nmai_binairo import BinairoBoard, DFSSolver, HeuristicSolver, measure_performance
+from nmai_binairo import DFSSolver, HeuristicSolver, measure_performance
 
-# Create a puzzle
 puzzle = [
     [None, 1, None, None, 0, None],
     [0, None, None, None, None, None],
@@ -166,36 +178,37 @@ puzzle = [
     [None, 0, None, 1, None, None],
 ]
 
-# Solve with DFS
 dfs_solver = DFSSolver()
-solution, stats = dfs_solver.solve(puzzle)
-print(f"DFS: {stats['nodes_explored']} nodes, solved: {solution is not None}")
+dfs_solution, dfs_stats = dfs_solver.solve([row[:] for row in puzzle])
+print("DFS solved:", dfs_solution is not None, "nodes:", dfs_stats.get("nodes_explored", 0))
 
-# Solve with Heuristic
 heu_solver = HeuristicSolver()
-solution, stats = heu_solver.solve(puzzle)
-print(f"Heuristic: {stats['nodes_explored']} nodes, solved: {solution is not None}")
+heu_solution, heu_stats = heu_solver.solve([row[:] for row in puzzle])
+print("HS solved:", heu_solution is not None, "nodes:", heu_stats.get("nodes_explored", 0))
 
-# Measure performance
-result, perf = measure_performance(heu_solver.solve, puzzle)
-print(f"Time: {perf.time_seconds:.4f}s, Memory: {perf.memory_peak_mb:.2f}MB")
+(_, perf) = measure_performance(heu_solver.solve, [row[:] for row in puzzle])
+print(f"time={perf.time_seconds:.6f}s peak_mem={perf.memory_peak_mb:.4f}MB")
 ```
 
-## Scripts Summary
+## Project Layout
 
-| Script | Purpose | Example |
-|--------|---------|---------|
-| `play_game.py` | Interactive Pygame game | `python play_game.py --size 8` |
-| `fetch_testcases.py` | Generate/manage testcases | `python fetch_testcases.py --count 10` |
-| `run_benchmark.py` | Run benchmarks with graphs | `python run_benchmark.py --detailed-plot` |
-
-## Requirements
-
-- Python 3.8+
-- pygame (for interactive game)
-- matplotlib (for benchmark graphs)
-- numpy (for graph plotting)
+```text
+nmai_binairo/
+  board.py
+  constraints.py
+  solver_dfs.py
+  solver_heuristic.py
+  play_game.py
+  main.py
+  benchmark.py
+  run_benchmark.py
+  fetch_testcases.py
+  benchmark_utils.py
+  visualizer.py
+  testcases/
+  results/
+```
 
 ## License
 
-ME hehe
+Course project repository (NMAI).
