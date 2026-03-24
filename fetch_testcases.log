@@ -1171,3 +1171,30 @@ Generating 3 20x20 puzzles...
 2026-03-24 00:18:39,045 - INFO -   [3/3] Got puzzle with 310 empty cells
 2026-03-24 00:18:39,050 - INFO - COMPLETE: Generated 15 puzzles
 Saved to: /Users/dsv/Desktop/school/NMAI/BTL/code/nmai_binairo/testcases/testcases.json
+2026-03-24 17:37:46,896 - INFO - ============================================================
+2026-03-24 17:37:46,896 - INFO - BINAIRO TESTCASE GENERATOR
+2026-03-24 17:37:46,896 - INFO - ============================================================
+2026-03-24 17:37:46,896 - INFO - Sizes: [6, 8, 10, 14]
+2026-03-24 17:37:46,896 - INFO - Puzzles per size: 1
+2026-03-24 17:37:46,896 - INFO - Difficulty: easy
+2026-03-24 17:37:46,896 - INFO - Output: testcases.json
+2026-03-24 17:37:46,896 - INFO - Source: online
+2026-03-24 17:37:46,896 - INFO - ============================================================
+2026-03-24 17:37:46,896 - INFO - 
+Generating 1 6x6 puzzles...
+2026-03-24 17:37:46,896 - INFO - Using timeout: 30.0s for 6x6 boards
+2026-03-24 17:37:49,073 - INFO -   [1/1] Got puzzle with 26 empty cells
+2026-03-24 17:37:49,074 - INFO - 
+Generating 1 8x8 puzzles...
+2026-03-24 17:37:49,074 - INFO - Using timeout: 30.0s for 8x8 boards
+2026-03-24 17:37:49,895 - INFO -   [1/1] Got puzzle with 49 empty cells
+2026-03-24 17:37:49,895 - INFO - 
+Generating 1 10x10 puzzles...
+2026-03-24 17:37:49,895 - INFO - Using timeout: 60.0s for 10x10 boards
+2026-03-24 17:37:50,704 - INFO -   [1/1] Got puzzle with 76 empty cells
+2026-03-24 17:37:50,705 - INFO - 
+Generating 1 14x14 puzzles...
+2026-03-24 17:37:50,705 - INFO - Using timeout: 180.0s for 14x14 boards
+2026-03-24 17:37:51,504 - INFO -   [1/1] Got puzzle with 151 empty cells
+2026-03-24 17:37:51,506 - INFO - COMPLETE: Generated 4 puzzles
+Saved to: /Users/dsv/Desktop/school/NMAI/BTL/code/nmai_binairo/testcases/testcases.json

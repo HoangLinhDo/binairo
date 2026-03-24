@@ -40,7 +40,7 @@ virtualenv/
 logs/
 
 # Test and Benchmark Results
-results/
+results/*.png
 *.json
 htmlcov/
 .coverage

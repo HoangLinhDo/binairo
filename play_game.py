@@ -16,6 +16,11 @@ import os
 import json
 import argparse
 import time
+import gc
+import tracemalloc
+from datetime import datetime
+from pathlib import Path
+from uuid import uuid4
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -103,6 +108,68 @@ class BinairoGame:
         self._init_pygame()
         self._create_buttons()
         self._new_puzzle()
+
+    @property
+    def puzzle_type(self) -> str:
+        """Return a compact puzzle type label used in logs."""
+        return f"{self.board_size}x{self.board_size}_{self.difficulty}"
+
+    def _compute_steps(self, algorithm: str, stats: dict) -> int:
+        """Normalize step metric across solvers."""
+        if algorithm == 'heuristic':
+            return stats.get('nodes_explored', 0) + stats.get('propagations', 0)
+        return stats.get('nodes_explored', 0)
+
+    def _run_solver_with_metrics(self, algorithm: str, puzzle: list):
+        """Run a solver while measuring elapsed time and peak memory."""
+        solver = DFSSolver() if algorithm == 'dfs' else HeuristicSolver()
+
+        gc.collect()
+        tracemalloc.start()
+        start_time = time.perf_counter()
+
+        try:
+            solution, stats = solver.solve([row[:] for row in puzzle])
+            solved = solution is not None
+        except Exception:
+            solution = None
+            stats = {'nodes_explored': 0, 'propagations': 0}
+            solved = False
+
+        elapsed = time.perf_counter() - start_time
+        _, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
+        peak_mb = peak / (1024 * 1024)
+        steps = self._compute_steps(algorithm, stats)
+        return solution, stats, solved, elapsed, peak_mb, steps
+
+    def _save_solve_log(self, algorithm: str, mode: str, solved: bool,
+                        steps: int, elapsed: float, peak_mb: float) -> Path:
+        """Persist one solve run to a JSON file."""
+        log_dir = Path(__file__).resolve().parent / "results" / "play_logs"
+        log_dir.mkdir(parents=True, exist_ok=True)
+
+        record = {
+            "timestamp": datetime.now().isoformat(timespec="seconds"),
+            "algorithm": algorithm,
+            "mode": mode,
+            "size": self.board_size,
+            "difficulty": self.difficulty,
+            "puzzle_type": self.puzzle_type,
+            "time_seconds": elapsed,
+            "memory_peak_mb": peak_mb,
+            "steps": steps,
+            "solved": solved,
+        }
+
+        filename = f"solve_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid4().hex[:8]}.json"
+        file_path = log_dir / filename
+
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(record, f, indent=2)
+
+        return file_path
 
     def _calculate_dimensions(self):
         """Calculate screen dimensions."""
@@ -428,47 +495,89 @@ class BinairoGame:
 
         elif action_type == 'solve':
             self._reset_puzzle()
-            solver = DFSSolver() if action_value == 'dfs' else HeuristicSolver()
-            solution, stats = solver.solve([row[:] for row in self.board])
+            solution, _, solved, elapsed, peak_mb, steps = self._run_solver_with_metrics(
+                action_value,
+                self.board,
+            )
+            log_path = self._save_solve_log(
+                algorithm=action_value,
+                mode='solve',
+                solved=solved,
+                steps=steps,
+                elapsed=elapsed,
+                peak_mb=peak_mb,
+            )
+
             if solution:
                 self.board = solution
-                # For heuristic, show total steps (nodes + propagations)
-                if action_value == 'heuristic':
-                    total_steps = stats.get('nodes_explored', 0) + stats.get('propagations', 0)
-                    return f"Solved! Steps: {total_steps}"
-                else:
-                    return f"Solved! Steps: {stats['nodes_explored']}"
-            return "No solution found"
+                return (
+                    f"Solved! Steps: {steps} | Time: {elapsed:.4f}s | "
+                    f"Mem: {peak_mb:.2f}MB | Log: {log_path.name}"
+                )
+            return f"No solution found | Log: {log_path.name}"
 
         elif action_type == 'step':
             self._reset_puzzle()
-            return self._solve_step_by_step(action_value)
+            gc.collect()
+            tracemalloc.start()
+            start_time = time.perf_counter()
+
+            solved, steps, msg = self._solve_step_by_step(action_value)
+
+            elapsed = time.perf_counter() - start_time
+            _, peak = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
+            peak_mb = peak / (1024 * 1024)
+
+            log_path = self._save_solve_log(
+                algorithm=action_value,
+                mode='step',
+                solved=solved,
+                steps=steps,
+                elapsed=elapsed,
+                peak_mb=peak_mb,
+            )
+            return f"{msg} | Time: {elapsed:.4f}s | Mem: {peak_mb:.2f}MB | Log: {log_path.name}"
 
         elif action_type == 'compare':
             self._reset_puzzle()
             puzzle = [row[:] for row in self.board]
 
-            dfs_solver = DFSSolver()
-            _, dfs_stats = dfs_solver.solve([row[:] for row in puzzle])
+            _, _, dfs_solved, dfs_elapsed, dfs_peak_mb, dfs_steps = self._run_solver_with_metrics('dfs', puzzle)
+            _, _, hs_solved, hs_elapsed, hs_peak_mb, heu_steps = self._run_solver_with_metrics('heuristic', puzzle)
 
-            heu_solver = HeuristicSolver()
-            _, heu_stats = heu_solver.solve([row[:] for row in puzzle])
+            self._save_solve_log(
+                algorithm='dfs',
+                mode='compare',
+                solved=dfs_solved,
+                steps=dfs_steps,
+                elapsed=dfs_elapsed,
+                peak_mb=dfs_peak_mb,
+            )
+            self._save_solve_log(
+                algorithm='heuristic',
+                mode='compare',
+                solved=hs_solved,
+                steps=heu_steps,
+                elapsed=hs_elapsed,
+                peak_mb=hs_peak_mb,
+            )
 
-            dfs_steps = dfs_stats['nodes_explored']
-            heu_steps = heu_stats.get('nodes_explored', 0) + heu_stats.get('propagations', 0)
-
-            return f"DFS: {dfs_steps} | HS: {heu_steps} steps"
+            return (
+                f"DFS: {dfs_steps} steps ({dfs_elapsed:.4f}s) | "
+                f"HS: {heu_steps} steps ({hs_elapsed:.4f}s)"
+            )
 
         return ""
 
-    def _solve_step_by_step(self, algorithm: str) -> str:
+    def _solve_step_by_step(self, algorithm: str):
         """Solve with step-by-step visualization."""
         if algorithm == 'dfs':
             return self._step_dfs()
         else:
             return self._step_heuristic()
 
-    def _step_dfs(self) -> str:
+    def _step_dfs(self):
         """Step-by-step DFS solving."""
         n = self.board_size
         board = [row[:] for row in self.board]
@@ -544,10 +653,10 @@ class BinairoGame:
 
         if solve(0):
             self.board = board
-            return f"Solved with DFS! Steps: {steps}"
-        return "No solution"
+            return True, steps, f"Solved with DFS! Steps: {steps}"
+        return False, steps, "No solution"
 
-    def _step_heuristic(self) -> str:
+    def _step_heuristic(self):
         """Step-by-step heuristic solving."""
         n = self.board_size
         board = [row[:] for row in self.board]
@@ -714,8 +823,8 @@ class BinairoGame:
 
         if solve():
             self.board = board
-            return f"Solved with HS! Steps: {steps}"
-        return "No solution"
+            return True, steps, f"Solved with HS! Steps: {steps}"
+        return False, steps, "No solution"
 
     def _draw(self):
         """Draw everything."""
